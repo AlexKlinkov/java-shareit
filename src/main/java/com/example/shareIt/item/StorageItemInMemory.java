@@ -7,7 +7,6 @@ import com.example.shareIt.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +53,6 @@ public class StorageItemInMemory implements StorageItem{
             item.setOwner(storageUser.getUserWithoutListOfItems(newUser));
             log.debug("Помещаем созданную вещи в мапу хранилище");
             mapOfItems.put(id, item);
-            System.out.println(storageUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner());
             return mapOfItems.get(id);
             }
         }
@@ -95,7 +93,6 @@ public class StorageItemInMemory implements StorageItem{
             }
             log.debug("Обновляем вещь в списке вещей пользователя");
             User user = storageUser.getUserById(ownerId);
-            System.out.println(user.getListWithAllItemsWhichBelongsOwner());
             user.getListWithAllItemsWhichBelongsOwner().remove(previousItem);
             user.getListWithAllItemsWhichBelongsOwner().add(item);
             storageUser.update(ownerId, user);
@@ -111,32 +108,24 @@ public class StorageItemInMemory implements StorageItem{
     }
 
     public ItemDTO getItemById (int itemId) {
-/*        List<List<ItemDTO>> allItems = new ArrayList<>(mapOfItems.values());
-        List<ItemDTO> listWithAllItems = new ArrayList<>();
-        for (List<ItemDTO> list : allItems) {
-            for (ItemDTO item : list) {
-                listWithAllItems.add(item);
-            }
-        }
-        for (ItemDTO itemResult : listWithAllItems) {
-            if (itemResult.getId() == itemId) {
-                return itemResult;
-            }
-        }
-        return null;*/
         return mapOfItems.get(itemId);
     }
 
-
-    public ItemDTO getItemFromListWithItemsOfOwnerByOwnerIdAndItemId (int ownerId, int itemId) {
-        List<ItemDTO> items = storageUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner();
-        for (ItemDTO item : items) {
-            if (item.getId() == itemId) {
-                ItemDTO returnItem = storageUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner().get(
-                        new ArrayList<>(items).indexOf(item));
-                return returnItem;
+    public List<ItemDTO> getItemBySearchText (String text) {
+        log.debug("Возвращаем список доступных вещей для аренды по поиску 'ключевому слово'");
+        if (text.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<ItemDTO> returnAllFoundItemsByText = new ArrayList<>();
+        List<ItemDTO> allItems = new ArrayList<>(mapOfItems.values());
+        for (ItemDTO item : allItems) {
+            if (item.getAvailable()) {
+                if (item.getName().toUpperCase().contains(text.toUpperCase()) ||
+                        item.getDescription().toUpperCase().contains(text.toUpperCase())) {
+                    returnAllFoundItemsByText.add(item);
+                }
             }
         }
-        return null;
+        return returnAllFoundItemsByText;
     }
 }

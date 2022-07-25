@@ -7,4 +7,5 @@ public interface StorageItem {
     ItemDTO update (int ownerId, int itemId, ItemDTO item);
     List<ItemDTO> getItems (int ownerId);
     ItemDTO getItemById (int itemId);
+    List<ItemDTO> getItemBySearchText (String text);
 }

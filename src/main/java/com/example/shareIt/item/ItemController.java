@@ -40,4 +40,9 @@ public class ItemController {
     public ItemDTO getUserById (@PathVariable int itemId) {
         return storageItem.getItemById(itemId);
     }
+
+    @GetMapping("/search")
+    public List<ItemDTO> getItemBySearchText (@RequestParam(value = "text", required = false) String text) {
+        return storageItem.getItemBySearchText(text);
+    }
 }
