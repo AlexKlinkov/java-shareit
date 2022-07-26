@@ -1,7 +1,6 @@
 package com.example.shareIt.item;
 
 import com.example.shareIt.request.ItemRequest;
-import com.example.shareIt.user.User;
 import com.example.shareIt.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
