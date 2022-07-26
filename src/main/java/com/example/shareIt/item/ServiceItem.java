@@ -2,7 +2,7 @@ package com.example.shareIt.item;
 
 import java.util.List;
 
-public interface StorageItem {
+public interface ServiceItem {
     ItemDTO create (int ownerId, ItemDTO item);
     ItemDTO update (int ownerId, int itemId, ItemDTO item);
     List<ItemDTO> getItems (int ownerId);

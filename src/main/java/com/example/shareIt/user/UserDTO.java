@@ -1,16 +1,24 @@
 package com.example.shareIt.user;
 
+import com.example.shareIt.item.Item;
+import com.example.shareIt.item.ItemDTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data
-public class UserDTO {
-    int id;
-    String name;
-    String email;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.List;
 
-    public UserDTO (int id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
+@Data
+@AllArgsConstructor
+public class UserDTO {
+    transient int id;
+    @NotNull
+    @Pattern(regexp = "^\\S*$")
+    String name;
+    @Email
+    @NotNull
+    String email;
+    List<ItemDTO> listWithAllItemsWhichBelongsOwner;
 }

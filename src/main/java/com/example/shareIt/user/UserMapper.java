@@ -1,12 +1,10 @@
 package com.example.shareIt.user;
 
-import lombok.Data;
+import org.mapstruct.Mapper;
 
-@Data
-public class UserMapper {
+@Mapper(componentModel = "spring", uses = UserMapper.class)
+public interface UserMapper {
 
-    public static UserDTO toUserDTO (User user) {
-        return new UserDTO(user.getId(), user.getName(), user.getEmail());
-    }
-
+    User userFromDTOUser (UserDTO user);
+    UserDTO DTOUserFromUser (User user);
 }

@@ -11,31 +11,31 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final StorageUser storageUser;
+    private final ServiceUser storageUser;
 
     @Autowired
-    public UserController(@Qualifier("StorageUserInMemory") StorageUser storageUser) {
+    public UserController(@Qualifier("ServiceUserInMemory") ServiceUser storageUser) {
         this.storageUser = storageUser;
     }
 
 
     @PostMapping()
-    public User create (@Valid @RequestBody User user) {
+    public UserDTO create (@Valid @RequestBody UserDTO user) {
         return storageUser.create(user);
     }
 
     @PatchMapping(path = "/{userId}")
-    public User update (@PathVariable int userId, @RequestBody User user) {
+    public UserDTO update (@PathVariable int userId, @RequestBody UserDTO user) {
         return storageUser.update(userId, user);
     }
 
     @GetMapping
-    public List<User> getUsers () {
+    public List<UserDTO> getUsers () {
         return storageUser.getUsers();
     }
 
     @GetMapping(path = "/{userId}")
-    public User getUserById (@PathVariable int userId) {
+    public UserDTO getUserById (@PathVariable int userId) {
         return storageUser.getUserById(userId);
     }
 

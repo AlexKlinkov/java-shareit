@@ -1,12 +1,10 @@
 package com.example.shareIt.item;
 
-import lombok.Data;
 
-@Data
-public class ItemMapper {
+import org.mapstruct.Mapper;
 
-    public static ItemDTO toItemDTO (Item item) {
-        return new ItemDTO(item.getId(), item.getName(), item.getDescription(), item.getAvailable(), item.getOwner(),
-                item.getRequest());
-    }
+@Mapper(componentModel = "spring", uses = ItemMapper.class)
+public interface ItemMapper {
+    Item itemFromItemDTO (ItemDTO item);
+    ItemDTO itemDTOFromItem (Item item);
 }

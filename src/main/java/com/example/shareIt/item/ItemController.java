@@ -1,7 +1,5 @@
 package com.example.shareIt.item;
 
-import com.example.shareIt.errorHandlerException.ValidationException;
-import com.example.shareIt.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -13,36 +11,36 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
 
-    private final StorageItem storageItem;
+    private final ServiceItem ServiceItem;
 
     @Autowired
-    public ItemController(@Qualifier("StorageItemInMemory") StorageItem storageItem) {
-        this.storageItem = storageItem;
+    public ItemController(@Qualifier("ServiceItemInMemory") ServiceItem ServiceItem) {
+        this.ServiceItem = ServiceItem;
     }
 
     @PostMapping
     public ItemDTO create(@RequestHeader("X-Sharer-User-Id") int ownerId, @Valid @RequestBody ItemDTO item) {
-       return storageItem.create(ownerId, item);
+       return ServiceItem.create(ownerId, item);
     }
 
     @PatchMapping(path = "/{itemId}")
     public ItemDTO update (@RequestHeader("X-Sharer-User-Id") int ownerId, @PathVariable int itemId,
                            @RequestBody ItemDTO item) {
-        return storageItem.update(ownerId, itemId, item);
+        return ServiceItem.update(ownerId, itemId, item);
     }
 
     @GetMapping
     public List<ItemDTO> getItems (@RequestHeader("X-Sharer-User-Id") int ownerId) {
-        return storageItem.getItems(ownerId);
+        return ServiceItem.getItems(ownerId);
     }
 
     @GetMapping(path = "/{itemId}")
     public ItemDTO getUserById (@PathVariable int itemId) {
-        return storageItem.getItemById(itemId);
+        return ServiceItem.getItemById(itemId);
     }
 
     @GetMapping("/search")
     public List<ItemDTO> getItemBySearchText (@RequestParam(value = "text", required = false) String text) {
-        return storageItem.getItemBySearchText(text);
+        return ServiceItem.getItemBySearchText(text);
     }
 }

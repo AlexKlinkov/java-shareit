@@ -2,9 +2,12 @@ package com.example.shareIt.item;
 
 import com.example.shareIt.errorHandlerException.NotFoundException;
 import com.example.shareIt.errorHandlerException.ValidationException;
-import com.example.shareIt.user.StorageUser;
+import com.example.shareIt.user.ServiceUser;
 import com.example.shareIt.user.User;
+import com.example.shareIt.user.UserDTO;
+import com.example.shareIt.user.UserMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,48 +17,54 @@ import java.util.*;
 
 @Slf4j
 @Service
-@Component("StorageItemInMemory")
-public class StorageItemInMemory implements StorageItem{
-    private Map<Integer, ItemDTO> mapOfItems = new HashMap<>();
+@Component("ServiceItemInMemory")
+public class ServiceItemInMemory implements ServiceItem{
+    private Map<Integer, Item> itemRepository = new HashMap<>();
     private int id = 0;
-    private StorageUser storageUser;
+    private ItemMapper itemMapper = Mappers.getMapper(ItemMapper.class);
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private ServiceUser serviceUser;
 
     @Autowired
-    public StorageItemInMemory(@Qualifier("StorageUserInMemory") StorageUser storageUser) {
-        this.storageUser = storageUser;
+    public ServiceItemInMemory(@Qualifier("ServiceUserInMemory") ServiceUser serviceUser) {
+        this.serviceUser = serviceUser;
     }
 
     public ItemDTO create (int ownerId, ItemDTO item) {
+        log.debug("Преобразовываем ДТО объект пришедший от пользователя в DAO объект, который работает с хранилищем, " +
+                "в нашем случае в обычный item, при создании новой вещи");
+        Item itemFromDTO = itemMapper.itemFromItemDTO(item);
         log.debug("Не может быть создана новая вещь без указания владельца этой вещи");
-        User newUser = storageUser.getUserById(ownerId);
+        User newUser = userMapper.userFromDTOUser(serviceUser.getUserById(ownerId));
         if (newUser == null) {
             throw new NotFoundException("Искомый объект при созднии вещи не найден");
         }
         log.debug("Выкидываем внутренюю ошибку сервера при создании уже существующей вещи");
-        if (mapOfItems.containsValue(item)) {
+        if (itemRepository.containsValue(itemFromDTO)) {
             throw new RuntimeException("Внутреняя ошибка сервера при создании уже существующей вещи");
         } else {
             log.debug("Создаем вещь если такой вещи еще нет");
             id += 1;
-            item.setId(id);
+            itemFromDTO.setId(id);
             log.debug("При создании вещи, добавляем ее в список вещей пользователя");
             if (newUser.getListWithAllItemsWhichBelongsOwner() == null) {
                 newUser.setListWithAllItemsWhichBelongsOwner(new ArrayList<>());
-                newUser.getListWithAllItemsWhichBelongsOwner().add(item);
+                newUser.getListWithAllItemsWhichBelongsOwner().add(itemMapper.itemDTOFromItem(itemFromDTO));
             } else {
-                newUser.getListWithAllItemsWhichBelongsOwner().add(item);
+                newUser.getListWithAllItemsWhichBelongsOwner().add(itemMapper.itemDTOFromItem(itemFromDTO));
             }
             log.debug("Обновляем пользователя в хранилище мапе пользователей");
-            storageUser.update(ownerId, newUser);
+            UserDTO user = userMapper.DTOUserFromUser(newUser);
+            serviceUser.update(ownerId, user);
             // Избегаем цикличности, получаем вещь и ее владельца (без списка вещей, которые принаджежат владельцу)
-            // Один пользователь для хранилища пользователей ( со списком вещей ему принадлежащих)
-            // Другой пользователь для хранилища веще, для поля владелец
-            item.setOwner(storageUser.getUserWithoutListOfItems(newUser));
+            user.setListWithAllItemsWhichBelongsOwner(null);
+            itemFromDTO.setOwner(user);
             log.debug("Помещаем созданную вещи в мапу хранилище");
-            mapOfItems.put(id, item);
-            return mapOfItems.get(id);
-            }
+            itemRepository.put(id, itemFromDTO);
+            log.debug("Возвращаем при создании новой вещи тоже DTOItem");
+            return itemMapper.itemDTOFromItem(itemRepository.get(id));
         }
+    }
 
     public ItemDTO update (int ownerId, int itemId, ItemDTO item) {
         log.debug("Проверяем, что при обновлении вещи был указан ID ее хозяина");
@@ -67,13 +76,13 @@ public class StorageItemInMemory implements StorageItem{
             throw new NotFoundException("Пользователь пытается обновить данные по вещи, которая ему не принадлежит");
         }
         log.debug("Обновляем вещь по ID, если такая вещь уже существует");
-        if (mapOfItems.containsKey(itemId)) {
+        if (itemRepository.containsKey(itemId)) {
             item.setId(itemId);
             log.debug("Оставляем значение полей от предущей вещи, если у новой они пустые или null при обновлении");
-            ItemDTO previousItem = getItemById(itemId);
+            Item previousItem = itemMapper.itemFromItemDTO(getItemById(itemId));
             if (item.getName() == null || item.getName().isEmpty()) {
-               log.debug("Значение имени при обновлении от предыдущей версии вещи");
-               item.setName(previousItem.getName());
+                log.debug("Значение имени при обновлении от предыдущей версии вещи");
+                item.setName(previousItem.getName());
             }
             if (item.getDescription() == null || item.getDescription().isEmpty()) {
                 log.debug("Значение описания при обновлении от предыдущей версии вещи");
@@ -85,30 +94,37 @@ public class StorageItemInMemory implements StorageItem{
             }
             if (item.getOwner() == null) {
                 log.debug("Значение собственника при обновлении от предыдущей версии вещи");
-                item.setOwner(previousItem.getOwner());
+                item.setOwner(getItemById(itemId).getOwner());
             }
             if (item.getRequest() == null) {
                 log.debug("Значение запроса при обновлении от предыдущей версии вещи");
                 item.setRequest(previousItem.getRequest());
             }
             log.debug("Обновляем вещь в списке вещей пользователя");
-            User user = storageUser.getUserById(ownerId);
-            user.getListWithAllItemsWhichBelongsOwner().remove(previousItem);
-            user.getListWithAllItemsWhichBelongsOwner().add(item);
-            storageUser.update(ownerId, user);
-            mapOfItems.put(id, item);
-            return mapOfItems.get(id);
+            User user = userMapper.userFromDTOUser(serviceUser.getUserById(ownerId));
+            previousItem.setOwner(null);
+            List<ItemDTO> items = new ArrayList<>(user.getListWithAllItemsWhichBelongsOwner());
+            for (ItemDTO itemDTO : items) {
+                if (itemMapper.itemDTOFromItem(previousItem).getId() == itemDTO.getId()) {
+                    items.remove(itemDTO);
+                    items.add(item);
+                    user.setListWithAllItemsWhichBelongsOwner(items);
+                }
+            }
+            serviceUser.update(ownerId, userMapper.DTOUserFromUser(user));
+            itemRepository.put(itemId, itemMapper.itemFromItemDTO(item));
+            return itemMapper.itemDTOFromItem(itemRepository.get(itemId));
         }
         return null;
     }
 
 
     public List<ItemDTO> getItems (int ownerId) {
-        return  storageUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner();
+        return serviceUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner();
     }
 
     public ItemDTO getItemById (int itemId) {
-        return mapOfItems.get(itemId);
+        return itemMapper.itemDTOFromItem(itemRepository.get(itemId));
     }
 
     public List<ItemDTO> getItemBySearchText (String text) {
@@ -117,12 +133,12 @@ public class StorageItemInMemory implements StorageItem{
             return new ArrayList<>();
         }
         List<ItemDTO> returnAllFoundItemsByText = new ArrayList<>();
-        List<ItemDTO> allItems = new ArrayList<>(mapOfItems.values());
-        for (ItemDTO item : allItems) {
+        List<Item> allItems = new ArrayList<>(itemRepository.values());
+        for (Item item : allItems) {
             if (item.getAvailable()) {
                 if (item.getName().toUpperCase().contains(text.toUpperCase()) ||
                         item.getDescription().toUpperCase().contains(text.toUpperCase())) {
-                    returnAllFoundItemsByText.add(item);
+                    returnAllFoundItemsByText.add(itemMapper.itemDTOFromItem(item));
                 }
             }
         }
