@@ -1,4 +1,4 @@
-package com.example.shareIt.user;
+package ru.practicum.shareit.user;
 
 import java.util.List;
 

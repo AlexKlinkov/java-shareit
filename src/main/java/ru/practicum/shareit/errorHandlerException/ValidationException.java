@@ -1,4 +1,4 @@
-package com.example.shareIt.errorHandlerException;
+package ru.practicum.shareit.errorHandlerException;
 
 public class ValidationException extends RuntimeException {
 

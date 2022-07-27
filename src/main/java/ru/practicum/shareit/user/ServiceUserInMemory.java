@@ -1,4 +1,4 @@
-package com.example.shareIt.user;
+package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;

@@ -1,11 +1,10 @@
-package com.example.shareIt.booking;
+package ru.practicum.shareit.booking;
 
-import com.example.shareIt.item.Item;
-import com.example.shareIt.user.User;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.Future;
 import java.time.LocalDate;
 
 @Data

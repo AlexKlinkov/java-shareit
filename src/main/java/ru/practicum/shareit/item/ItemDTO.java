@@ -1,7 +1,7 @@
-package com.example.shareIt.item;
+package ru.practicum.shareit.item;
 
-import com.example.shareIt.request.ItemRequest;
-import com.example.shareIt.user.UserDTO;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
-public class Item {
+public class ItemDTO {
     transient int id;
     @NotEmpty
     String name;
@@ -18,6 +18,6 @@ public class Item {
     String description;
     @NotNull
     Boolean available;
-    UserDTO owner;
+    User owner;
     ItemRequest request;
 }

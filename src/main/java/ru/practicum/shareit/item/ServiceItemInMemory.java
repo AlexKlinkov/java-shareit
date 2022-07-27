@@ -1,11 +1,11 @@
-package com.example.shareIt.item;
+package ru.practicum.shareit.item;
 
-import com.example.shareIt.errorHandlerException.NotFoundException;
-import com.example.shareIt.errorHandlerException.ValidationException;
-import com.example.shareIt.user.ServiceUser;
-import com.example.shareIt.user.User;
-import com.example.shareIt.user.UserDTO;
-import com.example.shareIt.user.UserMapper;
+import ru.practicum.shareit.errorHandlerException.NotFoundException;
+import ru.practicum.shareit.errorHandlerException.ValidationException;
+import ru.practicum.shareit.user.ServiceUser;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserDTO;
+import ru.practicum.shareit.user.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;

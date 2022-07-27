@@ -1,6 +1,6 @@
-package com.example.shareIt.request;
+package ru.practicum.shareit.request;
 
-import com.example.shareIt.user.User;
+import ru.practicum.shareit.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

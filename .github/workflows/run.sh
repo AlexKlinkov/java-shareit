@@ -1,1 +1,1 @@
-nohup mvn spring-boot:run -Dspring-boot.run.profiles=ci &
+nohup mvn spring-boot:run -spring-boot.run.profiles=ci &

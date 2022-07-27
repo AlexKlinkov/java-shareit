@@ -1,4 +1,4 @@
-package com.example.shareIt.errorHandlerException;
+package ru.practicum.shareit.errorHandlerException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
-package com.example.shareIt.user;
+package ru.practicum.shareit.user;
 
-import com.example.shareIt.item.ItemDTO;
+import ru.practicum.shareit.item.ItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
