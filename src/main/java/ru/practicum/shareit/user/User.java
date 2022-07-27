@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.item.ItemDTO;
+import ru.practicum.shareit.item.Item;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -19,5 +19,5 @@ public class User {
     @Email
     @NotNull
     String email;
-    List<ItemDTO> listWithAllItemsWhichBelongsOwner;
+    List<Item> listWithAllItemsWhichBelongsOwner;
 }

@@ -49,16 +49,16 @@ public class ServiceItemInMemory implements ServiceItem{
             log.debug("При создании вещи, добавляем ее в список вещей пользователя");
             if (newUser.getListWithAllItemsWhichBelongsOwner() == null) {
                 newUser.setListWithAllItemsWhichBelongsOwner(new ArrayList<>());
-                newUser.getListWithAllItemsWhichBelongsOwner().add(itemMapper.itemDTOFromItem(itemFromDTO));
+                newUser.getListWithAllItemsWhichBelongsOwner().add(itemFromDTO);
             } else {
-                newUser.getListWithAllItemsWhichBelongsOwner().add(itemMapper.itemDTOFromItem(itemFromDTO));
+                newUser.getListWithAllItemsWhichBelongsOwner().add(itemFromDTO);
             }
             log.debug("Обновляем пользователя в хранилище мапе пользователей");
             UserDTO user = userMapper.DTOUserFromUser(newUser);
             serviceUser.update(ownerId, user);
             // Избегаем цикличности, получаем вещь и ее владельца (без списка вещей, которые принаджежат владельцу)
             user.setListWithAllItemsWhichBelongsOwner(null);
-            itemFromDTO.setOwner(user);
+            itemFromDTO.setOwner(userMapper.userFromDTOUser(user));
             log.debug("Помещаем созданную вещи в мапу хранилище");
             itemRepository.put(id, itemFromDTO);
             log.debug("Возвращаем при создании новой вещи тоже DTOItem");
@@ -103,11 +103,11 @@ public class ServiceItemInMemory implements ServiceItem{
             log.debug("Обновляем вещь в списке вещей пользователя");
             User user = userMapper.userFromDTOUser(serviceUser.getUserById(ownerId));
             previousItem.setOwner(null);
-            List<ItemDTO> items = new ArrayList<>(user.getListWithAllItemsWhichBelongsOwner());
-            for (ItemDTO itemDTO : items) {
+            List<Item> items = new ArrayList<>(user.getListWithAllItemsWhichBelongsOwner());
+            for (Item itemDTO : items) {
                 if (itemMapper.itemDTOFromItem(previousItem).getId() == itemDTO.getId()) {
                     items.remove(itemDTO);
-                    items.add(item);
+                    items.add(itemMapper.itemFromItemDTO(item));
                     user.setListWithAllItemsWhichBelongsOwner(items);
                 }
             }

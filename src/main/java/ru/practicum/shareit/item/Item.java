@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.UserDTO;
+import ru.practicum.shareit.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,6 +18,6 @@ public class Item {
     String description;
     @NotNull
     Boolean available;
-    UserDTO owner;
+    User owner;
     ItemRequest request;
 }
