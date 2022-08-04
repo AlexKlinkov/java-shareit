@@ -1,10 +1,9 @@
-package com.example.shareIt.request;
+package ru.practicum.shareit.request;
 
-import com.example.shareIt.user.User;
+import ru.practicum.shareit.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 
