@@ -19,5 +19,5 @@ public class UserDTO {
     @Email
     @NotNull
     String email;
-    List<ItemDTO> listWithAllItemsWhichBelongsOwner;
+    private List<ItemDTO> listWithAllItemsWhichBelongsOwner;
 }
