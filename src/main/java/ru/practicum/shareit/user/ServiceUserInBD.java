@@ -35,7 +35,6 @@ public class ServiceUserInBD implements ServiceUser {
         if (user.getName() != null) {
             existUserInBD.setName(user.getName());
         }
-        System.out.println(existUserInBD);
         log.debug("Обновляем пользователя");
         userRepository.save(existUserInBD);
         return getUserById(userId);

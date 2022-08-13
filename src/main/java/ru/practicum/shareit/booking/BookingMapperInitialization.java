@@ -22,17 +22,17 @@ public class BookingMapperInitialization implements BookingMapper {
     }
 
     @Override
-        public Booking bookingFromBookingDTOInput(BookingDTOInput booking, Integer bookerId) {
-            if ( booking == null && bookerId == null ) {
+        public Booking bookingFromBookingDTOInput(BookingDTOInput bookingDTO, Integer bookerId) {
+            if ( bookingDTO == null && bookerId == null ) {
                 return null;
             }
 
             Booking booking1 = new Booking();
 
-            if ( booking != null ) {
-                booking1.setStart( booking.getStart() );
-                booking1.setEnd( booking.getEnd() );
-                booking1.setItem(itemRepository.getById(booking.getItemId()));
+            if ( bookingDTO != null ) {
+                booking1.setStart( bookingDTO.getStart() );
+                booking1.setEnd( bookingDTO.getEnd() );
+                booking1.setItem(itemRepository.getById(bookingDTO.getItemId()));
                 booking1.setBooker( userRepository.getById(bookerId));
                 booking1.setStatus(TypeOfStatus.WAITING);
             }

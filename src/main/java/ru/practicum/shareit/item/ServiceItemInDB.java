@@ -167,8 +167,8 @@ public class ServiceItemInDB implements ServiceItem {
 
     @Override
     public CommentDTOOutput addComment (int userId, int itemId, CommentDTOInput commentDTOInput) {
-        log.debug("Пользователь, который брал вещь в пользование может оставить комментарий");
-        log.debug("Проверяем, что текст комменатрия не пустой");
+        log.debug("Пользователь, который брал вещь в пользование может оставить комментарий, " +
+                "Проверяем, что текст комменатрия не пустой");
         LocalDateTime now = LocalDateTime.now();
         if (commentDTOInput.getText().isEmpty()) {
             throw new ValidationException("Комменатрий не может быть пустым");
@@ -177,15 +177,10 @@ public class ServiceItemInDB implements ServiceItem {
                 "чтоб оставить комментарий");
         Booking booking = bookingRepository.findBookingByBooker_IdAndItemIdAndEndBeforeAndStatusIs(
                 userId, itemId, now, TypeOfStatus.APPROVED);
-        System.out.println(booking);
         if (booking == null) {
             throw new ValidationException("Данный пользователь не брал эту вещь в аренду, поэтому и не может оставлять" +
                     "комментарии");
         }
-/*        log.debug("Проверяем, что комментарий добавляется не к будущему бронированию");
-        if (now.isAfter(booking.getEnd())) {
-            throw new ValidationException("Комментарий не может быть добавлен к будущему бронированию");
-        }*/
         log.debug("Сохраняем комментарий в БД");
         Comment commentInBD =
                 commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId,commentDTOInput));

@@ -141,25 +141,25 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получаем список со всеми бронированиями отсортированными от новых к старым по дате старта");
         List<Booking> allBookings = new ArrayList<>(bookingRepository.findAll());
         List<Booking> bookings = new ArrayList<>();
-            for (Booking book : allBookings) {
-                if (book.getBooker().getId() == userId || book.getItem().getOwner().getId() == userId) {
-                    bookings.add(book);
-                }
+        for (Booking book : allBookings) {
+            if (book.getBooker().getId() == userId || book.getItem().getOwner().getId() == userId) {
+                bookings.add(book);
             }
+        }
         bookings.sort(Collections.reverseOrder(compareByStartDate));
         log.debug("Получение списка всех бронирований текущего пользователя");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         if (state.equals("ALL")) {
             for (Booking booking : bookings) {
-                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
             }
             return returnList;
         }
         log.debug("Получение списка будущих бронирований текущего пользователя");
         if (state.equals("FUTURE")) {
             for (Booking booking : bookings) {
-                    if (booking.getStart().isAfter(now)) {
-                        returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                if (booking.getStart().isAfter(now)) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
                 }
             }
             return returnList;
@@ -167,52 +167,46 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получение списка текущих бронирований текущего пользователя");
         if (state.equals("CURRENT")) {
             for (Booking booking : bookings) {
-                    if (now.isAfter(booking.getStart()) && now.isBefore(booking.getEnd())) {
-                        returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-                    }
+                if (now.isAfter(booking.getStart()) && now.isBefore(booking.getEnd())) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                }
             }
             return returnList;
         }
         log.debug("Получение списка завершенных бронирований текущего пользователя");
         if (state.equals("PAST")) {
             for (Booking booking : bookings) {
-                    if (now.isAfter(booking.getEnd())) {
-                        returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-                    }
+                if (now.isAfter(booking.getEnd())) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                }
             }
             return returnList;
         }
         log.debug("Получение списка бронирований ожидающих подтверждения для текущего пользователя");
         if (state.equals("WAITING")) {
             for (Booking booking : bookings) {
-                    if (booking.getStatus().equals(TypeOfStatus.WAITING)) {
-                        returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-                    }
+                if (booking.getStatus().equals(TypeOfStatus.WAITING)) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                }
             }
             return returnList;
         }
         log.debug("Получение списка бронирований с отклоненным статусом бронирования для текущего пользователя");
-        if (state.equals("REJECTED")) {
+        if (state.equals("REJECTED") && key.equals("booker")) {
             for (Booking booking : bookings) {
-                if (key.equals("booker")) {
-                    if (booking.getBooker().getId() == userId) {
-                        if (booking.getStatus().equals(TypeOfStatus.REJECTED)) {
-                            returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-                        }
-                    }
+                if (booking.getBooker().getId() == userId && booking.getStatus().equals(TypeOfStatus.REJECTED)) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
                 }
             }
-            if  (key.equals("owner")) {
-                for (Booking booking : bookings) {
-                    if (booking.getItem().getOwner().getId() == userId) {
-                        if (booking.getStatus().equals(TypeOfStatus.REJECTED)) {
-                            returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-                        }
-                    }
-                }
-            }
-            return returnList;
         }
-        return null;
+        if (state.equals("REJECTED") && key.equals("owner")) {
+            for (Booking booking : bookings) {
+                if (booking.getItem().getOwner().getId() == userId &&
+                        booking.getStatus().equals(TypeOfStatus.REJECTED)) {
+                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                }
+            }
+        }
+        return returnList;
     }
 }
