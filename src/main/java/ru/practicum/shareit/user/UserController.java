@@ -14,7 +14,7 @@ public class UserController {
     private final ServiceUser storageUser;
 
     @Autowired
-    public UserController(@Qualifier("ServiceUserInMemory") ServiceUser storageUser) {
+    public UserController(@Qualifier("ServiceUserInBD") ServiceUser storageUser) {
         this.storageUser = storageUser;
     }
 

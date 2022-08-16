@@ -2,10 +2,9 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
-import ru.practicum.shareit.user.ServiceUser;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserDTO;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.item.comment.CommentDTOInput;
+import ru.practicum.shareit.item.comment.CommentDTOOutput;
+import ru.practicum.shareit.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +71,14 @@ public class ServiceItemInMemory implements ServiceItem{
             throw new ValidationException("Не указан хозяин обновляемой вещи");
         }
         log.debug("Проверяем, что хозяин вещи обновляет свою вещь, а не чью-то чужую");
-        if (getItemById(itemId).getOwner().getId() != ownerId) {
+        if (getItemById(ownerId, itemId).getOwner().getId() != ownerId) {
             throw new NotFoundException("Пользователь пытается обновить данные по вещи, которая ему не принадлежит");
         }
         log.debug("Обновляем вещь по ID, если такая вещь уже существует");
         if (itemRepository.containsKey(itemId)) {
             item.setId(itemId);
             log.debug("Оставляем значение полей от предущей вещи, если у новой они пустые или null при обновлении");
-            Item previousItem = itemMapper.itemFromItemDTO(getItemById(itemId));
+            Item previousItem = itemMapper.itemFromItemDTO(getItemById(ownerId, itemId));
             if (item.getName() == null || item.getName().isEmpty()) {
                 log.debug("Значение имени при обновлении от предыдущей версии вещи");
                 item.setName(previousItem.getName());
@@ -94,7 +93,7 @@ public class ServiceItemInMemory implements ServiceItem{
             }
             if (item.getOwner() == null) {
                 log.debug("Значение собственника при обновлении от предыдущей версии вещи");
-                item.setOwner(getItemById(itemId).getOwner());
+                item.setOwner(getItemById(ownerId, itemId).getOwner());
             }
             if (item.getRequest() == null) {
                 log.debug("Значение запроса при обновлении от предыдущей версии вещи");
@@ -123,7 +122,7 @@ public class ServiceItemInMemory implements ServiceItem{
         return serviceUser.getUserById(ownerId).getListWithAllItemsWhichBelongsOwner();
     }
 
-    public ItemDTO getItemById (int itemId) {
+    public ItemDTO getItemById (int userId, int itemId) {
         return itemMapper.itemDTOFromItem(itemRepository.get(itemId));
     }
 
@@ -143,5 +142,10 @@ public class ServiceItemInMemory implements ServiceItem{
             }
         }
         return returnAllFoundItemsByText;
+    }
+
+    @Override
+    public CommentDTOOutput addComment(int userId, int itemId, CommentDTOInput commentDTOInput) {
+        return null;
     }
 }
