@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.comment.CommentDTOOutput;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserDTO;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
@@ -29,17 +30,20 @@ public class ItemMapperInitialization implements ItemMapper {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentMapper commentMapper;
 
     @Autowired
     public ItemMapperInitialization(BookingRepository bookingRepository, CommentRepository commentRepository,
                                     ItemRepository itemRepository, UserRepository userRepository, UserMapper userMapper,
+                                    ItemRequestRepository itemRequestRepository,
                                     @Qualifier("CommentMapperInitialization") CommentMapper commentMapper) {
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.itemRequestRepository = itemRequestRepository;
         this.commentMapper = commentMapper;
     }
 
@@ -55,9 +59,13 @@ public class ItemMapperInitialization implements ItemMapper {
         item1.setName(item.getName());
         item1.setDescription(item.getDescription());
         item1.setAvailable(item.getAvailable());
-        item1.setOwner( userMapper.userFromDTOUser(item.getOwner()) );
-        item1.setRequest(item.getRequest());
-
+        item1.setOwner( userMapper.userFromDTOUser( item.getOwner()) );
+        log.debug("В маппере вещи получаем информацию о запросе");
+        if (item.getRequestId() != null) {
+            item1.setRequest(itemRequestRepository.getById(item.getRequestId()));
+        } else {
+            item1.setRequest(null);
+        }
         return item1;
     }
 
@@ -72,7 +80,7 @@ public class ItemMapperInitialization implements ItemMapper {
         String description = null;
         Boolean available = null;
         UserDTO owner = null;
-        ItemRequest request = null;
+        Integer requestId = null;
 
         if (item.getId() != null) {
             id = item.getId();
@@ -81,8 +89,9 @@ public class ItemMapperInitialization implements ItemMapper {
         description = item.getDescription();
         available = item.getAvailable();
         owner = userMapper.DTOUserFromUser(userRepository.getById(item.getOwner().getId()));
-        request = item.getRequest();
-
+        if (item.getRequest() != null) {
+            requestId = item.getRequest().getId();
+        }
         log.debug("В маппере вещи определяем последнее и следующее бронирование");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("В маппере вещи получаем список будующих бронирований (nextBooking)");
@@ -124,7 +133,8 @@ public class ItemMapperInitialization implements ItemMapper {
             }
         }
 
-        ItemDTO itemDTO = new ItemDTO(id, name, description, available, owner, lastBooking, nextBooking, comments, request);
+        ItemDTO itemDTO = new ItemDTO(id, name, description, available, owner,
+                lastBooking, nextBooking, comments, requestId);
         log.debug("В маппере вещей все прошло успешно");
         return itemDTO;
     }

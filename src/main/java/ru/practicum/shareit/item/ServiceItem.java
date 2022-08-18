@@ -12,4 +12,5 @@ public interface ServiceItem {
     ItemDTO getItemById (int userId, int itemId);
     List<ItemDTO> getItemBySearchText (String text);
     CommentDTOOutput addComment (int userId, int itemId, CommentDTOInput commentDTOInput);
+    ItemDTO getItemDTOByRequestId (Integer requestId);
 }

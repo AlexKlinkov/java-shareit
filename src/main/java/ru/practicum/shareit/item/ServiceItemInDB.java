@@ -62,6 +62,7 @@ public class ServiceItemInDB implements ServiceItem {
         log.debug("Получаем сохраненую вещь из бд с ID");
         Item itemFromBD = itemRepository.getById((int) (itemRepository.count()));
         log.debug("Возвращаем созданную вещь из бд");
+        System.out.println(itemFromBD);
         return itemMapper.itemDTOFromItem(itemFromBD);
     }
 
@@ -89,9 +90,9 @@ public class ServiceItemInDB implements ServiceItem {
         if (item.available == null) {
             item.available = previousItem.available;
         }
-        if (item.getRequest() == null) {
+        if (item.getRequestId() == null) {
             log.debug("Значение запроса при обновлении от предыдущей версии вещи");
-            item.setRequest(previousItem.getRequest());
+            item.setRequestId(previousItem.getRequestId());
         }
         log.debug("Обновляем вещь");
         item.setId(itemId);
@@ -186,5 +187,17 @@ public class ServiceItemInDB implements ServiceItem {
                 commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId,commentDTOInput));
         return commentMapper.commentDTOOutputFromComment(commentInBD);
 
+    }
+
+    @Override
+    public ItemDTO getItemDTOByRequestId (Integer requestId) {
+        log.debug("Получаем список всех вещей, чтоб потом вернуть вещь по requestID");
+        List<Item> allItems = new ArrayList<>(itemRepository.findAll());
+        for (Item item : allItems) {
+            if (itemMapper.itemDTOFromItem(item).getRequestId() == requestId) {
+                return itemMapper.itemDTOFromItem(item);
+            }
+        }
+        return null;
     }
 }

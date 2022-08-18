@@ -95,9 +95,9 @@ public class ServiceItemInMemory implements ServiceItem{
                 log.debug("Значение собственника при обновлении от предыдущей версии вещи");
                 item.setOwner(getItemById(ownerId, itemId).getOwner());
             }
-            if (item.getRequest() == null) {
+            if (item.getRequestId() == null) {
                 log.debug("Значение запроса при обновлении от предыдущей версии вещи");
-                item.setRequest(previousItem.getRequest());
+                item.setRequestId(previousItem.getRequest().getId());
             }
             log.debug("Обновляем вещь в списке вещей пользователя");
             User user = userMapper.userFromDTOUser(serviceUser.getUserById(ownerId));
@@ -146,6 +146,11 @@ public class ServiceItemInMemory implements ServiceItem{
 
     @Override
     public CommentDTOOutput addComment(int userId, int itemId, CommentDTOInput commentDTOInput) {
+        return null;
+    }
+
+    @Override
+    public ItemDTO getItemDTOByRequestId(Integer requestId) {
         return null;
     }
 }

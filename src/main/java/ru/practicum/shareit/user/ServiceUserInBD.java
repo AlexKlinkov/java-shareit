@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ServiceUserInBD implements ServiceUser {
     private final UserRepository userRepository;
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
+    @Autowired
     public ServiceUserInBD(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
