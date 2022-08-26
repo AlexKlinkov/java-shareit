@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ItemDTO {
-    transient int id;
+    private int id;
     @NotEmpty
     private String name;
     @NotEmpty
@@ -26,4 +26,7 @@ public class ItemDTO {
     private BookingDTO nextBooking;
     private List<CommentDTOOutput> comments;
     private Integer requestId;
+
+    public ItemDTO() {
+    }
 }

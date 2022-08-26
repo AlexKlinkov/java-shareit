@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/bookings")
 public class BookingController {
     private final BookingService bookingService;
 
@@ -18,34 +18,34 @@ public class BookingController {
     }
 
 
-    @PostMapping("/bookings")
-    public BookingDTOOutput create(@RequestHeader("X-Sharer-User-Id") int user_id,
+    @PostMapping
+    public BookingDTOOutput create(@RequestHeader("X-Sharer-User-Id") int userId,
                            @Valid @RequestBody BookingDTOInput bookingDTO) {
-        return bookingService.create(user_id, bookingDTO);
+        return bookingService.create(userId, bookingDTO);
 
     }
 
-    @PatchMapping(path = "/bookings/{bookingId}")
+    @PatchMapping(path = "/{bookingId}")
     public BookingDTOOutput updateStatusOfBooking (@RequestHeader("X-Sharer-User-Id") int ownerId,
                                     @PathVariable int bookingId,
                                     @RequestParam(value = "approved") Boolean approved) {
         return bookingService.updateStatusOfBooking(ownerId, bookingId, approved);
     }
 
-    @GetMapping(path = "/bookings/{bookingId}")
+    @GetMapping(path = "/{bookingId}")
     public BookingDTOOutput findBookingByIdAndUserId (@RequestHeader("X-Sharer-User-Id") int userId,
                                                               @PathVariable int bookingId) {
         return bookingService.findBookingByIdAndUserId(userId, bookingId);
 
     }
-    @GetMapping("/bookings")
+    @GetMapping
     public List<BookingDTOOutput> getBookingsByBookerIdOrOwnerId (@RequestHeader("X-Sharer-User-Id") int userId,
                                                        @RequestParam(value = "state", required = false,
                                                                defaultValue = "ALL") String state, String key) {
         return bookingService.getBookingsByBookerIdOrOwnerId(userId, state, "booker");
     }
 
-    @GetMapping(path = "/bookings/owner")
+    @GetMapping(path = "/owner")
     public List<BookingDTOOutput> getBookingsByOwnerId (@RequestHeader("X-Sharer-User-Id") int userId,
                                                        @RequestParam(value = "state", required = false,
                                                                defaultValue = "ALL") String state, String key) {

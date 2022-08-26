@@ -56,7 +56,7 @@ public class BookingMapperInitialization implements BookingMapper {
             id = booking.getId();
             start = booking.getStart();
             end = booking.getEnd();
-            booker = new UserDTO(booking.getBooker().getId(), booking.getBooker().getName(), booking.getBooker().getEmail(), null);
+            booker = new UserDTO(booking.getBooker().getId(), booking.getBooker().getName(), booking.getBooker().getEmail());
             item = new ItemDTO(booking.getItem().getId(), booking.getItem().getName(), null, null, null,
                     null, null, null, null);
             status = booking.getStatus();

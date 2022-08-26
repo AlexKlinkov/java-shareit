@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -11,7 +13,8 @@ import ru.practicum.shareit.booking.TypeOfStatus;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
 import ru.practicum.shareit.item.comment.*;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.user.UserMapperImpl;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -22,33 +25,27 @@ import java.util.List;
 @Slf4j
 @Service
 @Component("ServiceItemInDB")
+@Data
+@RequiredArgsConstructor
 public class ServiceItemInDB implements ServiceItem {
-
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-
-    private final BookingRepository bookingRepository;
-
-    private final CommentRepository commentRepository;
-
-    private final CommentMapper commentMapper;
-    private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
+    @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
 
     @Autowired
-    public ServiceItemInDB(ItemRepository itemRepository, UserRepository userRepository,
-                           BookingRepository bookingRepository,
-                           CommentRepository commentRepository,
-                           @Qualifier("CommentMapperInitialization") CommentMapper commentMapper,
-                           @Qualifier("ItemMapperInitialization") ItemMapper itemMapper, UserMapper userMapper) {
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
-        this.bookingRepository = bookingRepository;
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-        this.itemMapper = itemMapper;
-        this.userMapper = userMapper;
-    }
+    private UserMapperImpl userMapper = new UserMapperImpl();
+
+    @Autowired
+    private CommentMapperInitialization commentMapper = new CommentMapperInitialization(getUserRepository(), getItemRepository());
+    @Autowired
+    private ItemMapperInitialization itemMapper = new ItemMapperInitialization();
 
     @Override
     public ItemDTO create(int ownerId, ItemDTO item) {
@@ -58,12 +55,8 @@ public class ServiceItemInDB implements ServiceItem {
         log.debug("При создании вещи определяем ее хозяина");
         item.setOwner(userMapper.DTOUserFromUser(userRepository.getById(ownerId)));
         log.debug("Сохраняем новую вещь в БД");
-        itemRepository.save(itemMapper.itemFromItemDTO(item));
-        log.debug("Получаем сохраненую вещь из бд с ID");
-        Item itemFromBD = itemRepository.getById((int) (itemRepository.count()));
-        log.debug("Возвращаем созданную вещь из бд");
-        System.out.println(itemFromBD);
-        return itemMapper.itemDTOFromItem(itemFromBD);
+        Item itemReturn = itemRepository.save(itemMapper.itemFromItemDTO(item));
+        return itemMapper.itemDTOFromItem(itemReturn);
     }
 
     @Override

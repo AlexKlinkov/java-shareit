@@ -3,10 +3,9 @@ package ru.practicum.shareit.request;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.ItemDTO;
-import ru.practicum.shareit.item.ServiceItem;
+import ru.practicum.shareit.item.ServiceItemInDB;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -18,13 +17,11 @@ import java.util.List;
 @Component("ItemRequestMapperInitialization")
 public class ItemRequestMapperInitialization implements ItemRequestMapper {
 
-    private final UserRepository userRepository;
-    private final ServiceItem serviceItem;
+
+    private final ServiceItemInDB serviceItem;
 
     @Autowired
-    public ItemRequestMapperInitialization(UserRepository userRepository,
-                                           @Qualifier("ServiceItemInDB") ServiceItem serviceItem) {
-        this.userRepository = userRepository;
+    public ItemRequestMapperInitialization(@Qualifier("ServiceItemInDB") ServiceItemInDB serviceItem) {
         this.serviceItem = serviceItem;
     }
 
@@ -39,8 +36,8 @@ public class ItemRequestMapperInitialization implements ItemRequestMapper {
         itemRequest.setDescription(itemRequestDTOInput.getDescription());
         User requestor = new User();
         requestor.setId(userId);
-        requestor.setName(userRepository.getById(userId).getName());
-        requestor.setEmail(userRepository.getById(userId).getEmail());
+        requestor.setName(serviceItem.getUserRepository().getById(userId).getName());
+        requestor.setEmail(serviceItem.getUserRepository().getById(userId).getEmail());
         itemRequest.setRequestor(requestor);
         itemRequest.setCreated(LocalDateTime.now());
 
@@ -60,8 +57,8 @@ public class ItemRequestMapperInitialization implements ItemRequestMapper {
         log.debug("Устанавливаем пользователя, который создает запрос на вещь в маппере создания запросов");
         User requestor = new User();
         requestor.setId(userId);
-        requestor.setName(userRepository.getById(userId).getName());
-        requestor.setEmail(userRepository.getById(userId).getEmail());
+        requestor.setName(serviceItem.getUserRepository().getById(userId).getName());
+        requestor.setEmail(serviceItem.getUserRepository().getById(userId).getEmail());
         itemRequestDTOOutput.setRequestor(requestor);
         itemRequestDTOOutput.setCreated(itemRequest.getCreated());
         log.debug("В маппере запросов устанавливаем значение вещи (возможно кто-то создал вещь по нашему запросу)");

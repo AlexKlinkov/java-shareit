@@ -18,6 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
+###.src/main/java/ru/practicum/shareit/item/ServiceItemInMemory
+###.src/main/java/ru/practicum/shareit/user/ServiceUserInMemory
 
 ### NetBeans ###
 /nbproject/private/

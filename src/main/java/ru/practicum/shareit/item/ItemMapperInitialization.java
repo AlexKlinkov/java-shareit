@@ -6,46 +6,37 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingDTO;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.item.comment.Comment;
-import ru.practicum.shareit.item.comment.CommentDTOOutput;
-import ru.practicum.shareit.item.comment.CommentMapper;
-import ru.practicum.shareit.item.comment.CommentRepository;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.item.comment.*;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserDTO;
 import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserMapperImpl;
 import ru.practicum.shareit.user.UserRepository;
 
 @Slf4j
 @Component("ItemMapperInitialization")
 public class ItemMapperInitialization implements ItemMapper {
 
-    private final BookingRepository bookingRepository;
-    private final CommentRepository commentRepository;
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final ItemRequestRepository itemRequestRepository;
-    private final CommentMapper commentMapper;
-
     @Autowired
-    public ItemMapperInitialization(BookingRepository bookingRepository, CommentRepository commentRepository,
-                                    ItemRepository itemRepository, UserRepository userRepository, UserMapper userMapper,
-                                    ItemRequestRepository itemRequestRepository,
-                                    @Qualifier("CommentMapperInitialization") CommentMapper commentMapper) {
-        this.bookingRepository = bookingRepository;
-        this.commentRepository = commentRepository;
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.itemRequestRepository = itemRequestRepository;
-        this.commentMapper = commentMapper;
-    }
+    private BookingRepository bookingRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
+    @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
+
+    private CommentMapper commentMapper = new CommentMapperInitialization(getUserRepository(), getItemRepository());
+    @Autowired
+    private UserMapper userMapper = new UserMapperImpl();
+
 
     @Override
     public Item itemFromItemDTO(ItemDTO item) {
@@ -62,7 +53,7 @@ public class ItemMapperInitialization implements ItemMapper {
         item1.setOwner( userMapper.userFromDTOUser( item.getOwner()) );
         log.debug("В маппере вещи получаем информацию о запросе");
         if (item.getRequestId() != null) {
-            item1.setRequest(itemRequestRepository.getById(item.getRequestId()));
+            item1.setRequest(itemRequestRepository.getReferenceById(item.getRequestId()));
         } else {
             item1.setRequest(null);
         }
@@ -137,6 +128,14 @@ public class ItemMapperInitialization implements ItemMapper {
                 lastBooking, nextBooking, comments, requestId);
         log.debug("В маппере вещей все прошло успешно");
         return itemDTO;
+    }
+
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
+
+    public ItemRepository getItemRepository() {
+        return itemRepository;
     }
 }
 

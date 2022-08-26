@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import ru.practicum.shareit.item.ItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,12 +13,15 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UserDTO {
-    transient int id;
+    private Integer id;
     @NotNull
     @Pattern(regexp = "^\\S*$")
-    String name;
+    private String name;
     @Email
     @NotNull
-    String email;
-    private List<ItemDTO> listWithAllItemsWhichBelongsOwner;
+    private String email;
+    //private List<ItemDTO> listWithAllItemsWhichBelongsOwner;
+
+    public UserDTO() {
+    }
 }

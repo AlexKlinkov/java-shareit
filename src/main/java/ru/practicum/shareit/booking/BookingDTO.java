@@ -12,4 +12,7 @@ public class BookingDTO {
     private Integer bookerId;
     private LocalDateTime start;
     private LocalDateTime end;
+
+    public BookingDTO() {
+    }
 }

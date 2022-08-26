@@ -1,5 +1,8 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.Item;
 import lombok.Data;
 
@@ -13,6 +16,8 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +29,10 @@ public class User {
     @NotNull
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    @Transient
-    private List<Item> listWithAllItemsWhichBelongsOwner;
+    /*@Transient
+    private List<Item> listWithAllItemsWhichBelongsOwner;*/
+
+    public User() {
+
+    }
 }
