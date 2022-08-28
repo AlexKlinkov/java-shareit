@@ -124,7 +124,6 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Проверяем поле статус  запросе");
         if (!state.equals("ALL") && !state.equals("CURRENT") && !state.equals("PAST") && !state.equals("FUTURE") &&
                 !state.equals("WAITING") && !state.equals("REJECTED")) {
-            System.out.println("Ну что тут такое?");
             throw new MyMethodArgumentTypeMismatchException("state", state);
         }
         log.debug("Проверяем, что пользователь по переданному ID есть в БД (метод получения бронирования по ID)");

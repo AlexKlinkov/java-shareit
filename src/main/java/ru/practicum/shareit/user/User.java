@@ -29,8 +29,6 @@ public class User {
     @NotNull
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    /*@Transient
-    private List<Item> listWithAllItemsWhichBelongsOwner;*/
 
     public User() {
 

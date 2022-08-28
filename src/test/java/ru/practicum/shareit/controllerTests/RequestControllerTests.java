@@ -67,7 +67,7 @@ public class RequestControllerTests {
                 .build();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        itemRequestDTOInput = new ItemRequestDTOInput("description");
+        itemRequestDTOInput = new ItemRequestDTOInput(1, "description");
         ownerItem = new User(1, "Owner", "Owner@mail.ru");
         requestor = new User(2, "Oleg", "Oleg@mail.ru");
         item = new ShortItemForAnswerOnQuery(1, "Отвертка", "screwdriver",

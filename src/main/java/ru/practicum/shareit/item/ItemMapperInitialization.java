@@ -53,7 +53,7 @@ public class ItemMapperInitialization implements ItemMapper {
         item1.setOwner( userMapper.userFromDTOUser( item.getOwner()) );
         log.debug("В маппере вещи получаем информацию о запросе");
         if (item.getRequestId() != null) {
-            item1.setRequest(itemRequestRepository.getReferenceById(item.getRequestId()));
+            item1.setRequest(itemRequestRepository.getById(item.getRequestId()));
         } else {
             item1.setRequest(null);
         }
