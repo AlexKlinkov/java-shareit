@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,16 +40,22 @@ public class BookingController {
 
     }
     @GetMapping
-    public List<BookingDTOOutput> getBookingsByBookerIdOrOwnerId (@RequestHeader("X-Sharer-User-Id") int userId,
-                                                       @RequestParam(value = "state", required = false,
-                                                               defaultValue = "ALL") String state, String key) {
-        return bookingService.getBookingsByBookerIdOrOwnerId(userId, state, "booker");
+    public List<BookingDTOOutput> getBookingsByBookerIdOrOwnerId (
+            @RequestHeader("X-Sharer-User-Id") int userId,
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, String key) {
+        System.out.println(from);
+        System.out.println(size);
+        return bookingService.getBookingsByOwnerIdOrBookingID(userId, state, from, size, "booker");
     }
 
     @GetMapping(path = "/owner")
-    public List<BookingDTOOutput> getBookingsByOwnerId (@RequestHeader("X-Sharer-User-Id") int userId,
-                                                       @RequestParam(value = "state", required = false,
-                                                               defaultValue = "ALL") String state, String key) {
-        return bookingService.getBookingsByBookerIdOrOwnerId(userId, state, "owner");
+    public List<BookingDTOOutput> getBookingsByOwnerId (
+            @RequestHeader("X-Sharer-User-Id") int userId,
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+            @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, String key)  {
+        return bookingService.getBookingsByOwnerIdOrBookingID(userId, state, from, size, "owner");
     }
 }

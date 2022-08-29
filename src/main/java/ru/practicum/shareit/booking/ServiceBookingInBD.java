@@ -3,6 +3,10 @@ package ru.practicum.shareit.booking;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandlerException.MyMethodArgumentTypeMismatchException;
@@ -10,6 +14,8 @@ import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestDTOOutput;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -18,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -119,8 +126,90 @@ public class ServiceBookingInBD implements BookingService {
         return null;
     }
 
+/*    public Page<Booking> getBookingsByOwnerId(int userId, String state, Pageable pageable, String key) {
+        log.debug("Проверяем поле статус");
+        if (!state.equals("CURRENT") && !state.equals("ALL") && !state.equals("PAST") && !state.equals("FUTURE") &&
+                !state.equals("WAITING") && !state.equals("REJECTED")) {
+            throw new MyMethodArgumentTypeMismatchException("state", state);
+        }
+        log.debug("Проверяем, что пользователь по переданному ID есть в БД (метод получения бронирования по ID)");
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователя с таким ID нет, не получилось получить информацию по бронированию");
+        }
+        log.debug("Получаем страницы со всеми бронированиями отсортированными от новых к старым по дате старта");
+        Page<Booking> pageReturn;
+        if (state.equals("ALL") && key.equals("booker")) {
+            pageReturn = bookingRepository.findAllByItemOwnerId(userId, pageable);
+            return pageReturn;
+        }
+        LocalDateTime now = LocalDateTime.now(); // Текущее время
+        log.debug("Получаем страницы со всеми будующими бронированиями");
+        if (state.equals("FUTURE")) {
+            pageReturn = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, pageable);
+            return pageReturn;
+        }
+        log.debug("Получение списка текущих бронирований текущего пользователя");
+        if (state.equals("CURRENT")) {
+            pageReturn = bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId,
+                            now, now, pageable);
+            return pageReturn;
+        }
+        log.debug("Получение списка завершенных бронирований текущего пользователя");
+        if (state.equals("PAST")) {
+            pageReturn = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, now, pageable);
+            return pageReturn;
+        }
+        log.debug("Получение списка бронирований с отклоненным статусом бронирования для текущего пользователя");
+        if (state.equals("REJECTED") && key.equals("owner")) {
+            pageReturn = bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.REJECTED, pageable);
+            return pageReturn;
+        }
+        return null;
+    }
+
+    public Page<Booking> getBookingsByBookerId(int userId, String state, Pageable pageable, String key) {
+        log.debug("Проверяем  статус");
+        if (!state.equals("PAST") && !state.equals("ALL") &&!state.equals("CURRENT") && !state.equals("FUTURE") &&
+                !state.equals("WAITING") && !state.equals("REJECTED")) {
+            throw new MyMethodArgumentTypeMismatchException("state", state);
+        }
+        log.debug("Проверяем, что пользователь по переданному ID есть в БД (метод получения бронирования по ID)");
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователя с таким ID нет, не получилось получить информацию по бронированию");
+        }
+        log.debug("Получаем страницы со всеми бронированиями отсортированными от (новых к старым) по дате старта");
+        Page<Booking> pageReturn;
+        if (state.equals("ALL") && key.equals("booker")) {
+            pageReturn = bookingRepository.findAllByBookerId(userId, pageable);
+            return pageReturn;
+        }
+        LocalDateTime now = LocalDateTime.now(); // Текущее время
+        log.debug("Получаем страницы со всеми будующими бронированиями");
+        if (state.equals("FUTURE")) {
+            pageReturn = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now, pageable);
+            return pageReturn;
+        }
+        log.debug("Получение списка текущих бронирований текущего пользователя");
+        if (state.equals("CURRENT")) {
+            pageReturn = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId,
+                    now, now, pageable);
+            return pageReturn;
+        }
+        log.debug("Получение списка завершенных бронирований текущего пользователя");
+        if (state.equals("PAST")) {
+            pageReturn = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, now, pageable);
+            return pageReturn;
+        }
+        if (state.equals("REJECTED") && key.equals("booker")) {
+            pageReturn = bookingRepository.findAllByBookerIdAndStatus(userId, TypeOfStatus.REJECTED, pageable);
+            return pageReturn;
+        }
+        return null;
+    }*/
+/*
     @Override
-    public List<BookingDTOOutput> getBookingsByBookerIdOrOwnerId(int userId, String state, String key) {
+    public List<BookingDTOOutput> getBookingsByBookerId(int userId, String state,
+                                                                 Integer from, Integer size) {
         log.debug("Проверяем поле статус  запросе");
         if (!state.equals("ALL") && !state.equals("CURRENT") && !state.equals("PAST") && !state.equals("FUTURE") &&
                 !state.equals("WAITING") && !state.equals("REJECTED")) {
@@ -130,70 +219,180 @@ public class ServiceBookingInBD implements BookingService {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователя с таким ID нет, не получилось получить информацию по бронированию");
         }
-        List<BookingDTOOutput> returnList = new ArrayList<>(); // Список для возврата результата
+        log.debug("Проверяем, что страница старта не отрицательная и количества страниц тоже");
+        if ((from < 0 || size < 0) || (from < 0 && size < 0)) {
+            throw new ValidationException("Ошибка валидации, выбрана отрицательная начальная страница или " +
+                    "Отрицательное количество страниц или и то и другое вместе");
+        }
+        log.debug("Проверяем, что старт и финиш  не равны друг другу");
+        if (from.equals(size)) {
+            throw new ValidationException("Ошибка валидации, выбрано ноль страниц");
+        }
+        Page<Booking> page = bookingRepository.findAllByBookerId(userId,
+                PageRequest.of(from, size, Sort.by(Sort.Direction.DESC)));
+        log.debug("Все запросы пользователя");
+        List<BookingDTOOutput> bookingDTOOutputListReturn = page.stream()
+                .map(bookingMapper::bookingDTOOutputFromBooking)
+                .collect(toList());
         log.debug("Получаем список со всеми бронированиями отсортированными от новых к старым по дате старта");
-        List<Booking> allBookings = new ArrayList<>(bookingRepository.findAll());
-        List<Booking> bookings = new ArrayList<>();
-        for (Booking book : allBookings) {
+        List<BookingDTOOutput> bookings = new ArrayList<>();
+        for (BookingDTOOutput book : bookingDTOOutputListReturn) {
             if (book.getBooker().getId() == userId || book.getItem().getOwner().getId() == userId) {
                 bookings.add(book);
             }
         }
-        bookings.sort(Comparator.comparing(Booking::getStart).reversed());
         log.debug("Получение списка всех бронирований текущего пользователя");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         if (state.equals("ALL")) {
-            for (Booking booking : bookings) {
-                returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
-            }
-            return returnList;
+            return bookings;
         }
+        ArrayList<BookingDTOOutput> returnList = new ArrayList<>();
         log.debug("Получение списка будущих бронирований текущего пользователя");
         if (state.equals("FUTURE")) {
-            for (Booking booking : bookings) {
+            for (BookingDTOOutput booking : bookings) {
                 if (booking.getStart().isAfter(now)) {
-                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                    returnList.add(booking);
                 }
             }
             return returnList;
         }
         log.debug("Получение списка текущих бронирований текущего пользователя");
         if (state.equals("CURRENT")) {
-            for (Booking booking : bookings) {
+            for (BookingDTOOutput booking : bookings) {
                 if (now.isAfter(booking.getStart()) && now.isBefore(booking.getEnd())) {
-                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                    returnList.add(booking);
                 }
             }
             return returnList;
         }
         log.debug("Получение списка завершенных бронирований текущего пользователя");
         if (state.equals("PAST")) {
-            for (Booking booking : bookings) {
+            for (BookingDTOOutput booking : bookings) {
                 if (now.isAfter(booking.getEnd())) {
-                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                    returnList.add(booking);
                 }
             }
             return returnList;
         }
         log.debug("Получение списка бронирований ожидающих подтверждения для текущего пользователя");
         if (state.equals("WAITING")) {
-            for (Booking booking : bookings) {
+            for (BookingDTOOutput booking : bookings) {
                 if (booking.getStatus().equals(TypeOfStatus.WAITING)) {
-                    returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
+                    returnList.add(booking);
                 }
             }
             return returnList;
         }
         log.debug("Получение списка бронирований с отклоненным статусом бронирования для текущего пользователя");
+        if (state.equals("REJECTED")) {
+            for (BookingDTOOutput booking : bookings) {
+                if (booking.getBooker().getId() == userId && booking.getStatus().equals(TypeOfStatus.REJECTED)) {
+                    returnList.add(booking);
+                }
+            }
+        }
+        return returnList;
+    }*/
+
+    @Override
+    public List<BookingDTOOutput> getBookingsByOwnerIdOrBookingID(int userId, String state,
+                                                                 int from, int size, String key) {
+        log.debug("Проверяем поле статус  запросе");
+        if (!state.equals("ALL") && !state.equals("CURRENT") && !state.equals("PAST") && !state.equals("FUTURE") &&
+                !state.equals("WAITING") && !state.equals("REJECTED")) {
+            throw new MyMethodArgumentTypeMismatchException("state", state);
+        }
+        log.debug("Проверяем, что пользователь по переданному ID есть в БД (метод получения бронирования по ID)");
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователя с таким ID нет, не получилось получить информацию по бронированию");
+        }
+
+        log.debug("Проверяем, что страница старта не отрицательная/количества страниц тоже");
+        if ((from < 0 || size < 0) || (from < 0 && size < 0)) {
+            throw new ValidationException("Ошибка валидации, выбрана отрицательная начальная страница или " +
+                    "Отрицательное количество страниц или и то и другое вместе");
+        }
+        log.debug("Проверяем, что старт и финиш  не равны друг другу");
+        if (from == size) {
+            System.out.println("Тут");
+            throw new ValidationException("Ошибка валидации, выбрано ноль страниц");
+        }
+        Page<Booking> pageOwner = bookingRepository.findAllByItemOwnerId(userId,
+                PageRequest.of(from, size));
+        Page<Booking> pageBooker = bookingRepository.findAllByBookerId(userId,
+                PageRequest.of(from, size));
+        List<Booking> bookingListOwner = pageOwner.stream()
+                .map(booking -> bookingRepository.getById(booking.getId()))
+                .collect(toList());
+        List<Booking> bookingListBooker = pageBooker.stream()
+                .map(booking -> bookingRepository.getById(booking.getId()))
+                .collect(toList());
+        log.debug("Получаем список со всеми бронированиями отсортированными от новых к старым по дате старта");
+        List<Booking> allBookings = new ArrayList<>();
+        allBookings.addAll(bookingListOwner);
+        allBookings.addAll(bookingListBooker);
+        List<BookingDTOOutput> bookings = new ArrayList<>();
+        for (Booking book : allBookings) {
+            if (book.getBooker().getId() == userId ||
+                    book.getItem().getOwner().getId() == userId) {
+                bookings.add(bookingMapper.bookingDTOOutputFromBooking(book));
+            }
+        }
+        bookings.sort(Comparator.comparing(BookingDTOOutput::getStart).reversed());
+        log.debug("Получение списка всех бронирований текущего пользователя");
+        LocalDateTime now = LocalDateTime.now(); // Текущее время
+        List<BookingDTOOutput> returnList = new ArrayList<>();
+        if (state.equals("ALL")) {
+            returnList.addAll(bookings);
+            return returnList;
+        }
+        log.debug("Получение списка будущих бронирований текущего пользователя");
+        if (state.equals("FUTURE")) {
+            for (BookingDTOOutput booking : bookings) {
+                if (booking.getStart().isAfter(now)) {
+                    returnList.add(booking);
+                }
+            }
+            return returnList;
+        }
+        log.debug("Получение списка текущих бронирований текущего пользователя");
+        if (state.equals("CURRENT")) {
+            for (BookingDTOOutput booking : bookings) {
+                if (now.isAfter(booking.getStart()) && now.isBefore(booking.getEnd())) {
+                    returnList.add(booking);
+                }
+            }
+            return returnList;
+        }
+        log.debug("Получение списка завершенных бронирований текущего пользователя");
+        if (state.equals("PAST")) {
+            for (BookingDTOOutput booking : bookings) {
+                if (now.isAfter(booking.getEnd())) {
+                    returnList.add(booking);
+                }
+            }
+            return returnList;
+        }
+        log.debug("Получение списка бронирований ожидающих подтверждения для текущего пользователя");
+        if (state.equals("WAITING")) {
+            for (BookingDTOOutput booking : bookings) {
+                if (booking.getStatus().equals(TypeOfStatus.WAITING)) {
+                    returnList.add(booking);
+                }
+            }
+            return returnList;
+        }
+
+        log.debug("Получение списка бронирований с отклоненным статусом бронирования для текущего пользователя");
         if (state.equals("REJECTED") && key.equals("booker")) {
-            for (Booking booking : bookings) {
+            for (Booking booking : allBookings) {
                 if (booking.getBooker().getId() == userId && booking.getStatus().equals(TypeOfStatus.REJECTED)) {
                     returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));
                 }
             }
         }
         if (state.equals("REJECTED") && key.equals("owner")) {
-            for (Booking booking : bookings) {
+            for (Booking booking : allBookings) {
                 if (booking.getItem().getOwner().getId() == userId &&
                         booking.getStatus().equals(TypeOfStatus.REJECTED)) {
                     returnList.add(bookingMapper.bookingDTOOutputFromBooking(booking));

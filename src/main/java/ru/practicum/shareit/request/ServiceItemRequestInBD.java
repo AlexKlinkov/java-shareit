@@ -59,7 +59,7 @@ public class ServiceItemRequestInBD implements ServiceItemRequest {
         if (from == size) {
             throw new ValidationException("Ошибка валидации, выбрано ноль страниц");
         }
-        log.debug("Проверяем, что страница старта и количества страниц не могут быть отрицательными числами");
+        log.debug("Проверяем, что страница старта не отрицательная и количества страниц тоже");
         if ((from < 0 || size < 0) || (from < 0 && size < 0)) {
             throw new ValidationException("Ошибка валидации, выбрана отрицательная начальная страница или " +
                     "Отрицательное количество страниц или и то и другое вместе");

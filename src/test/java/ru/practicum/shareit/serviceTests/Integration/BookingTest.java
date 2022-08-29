@@ -165,55 +165,63 @@ public class BookingTest {
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenStatusIsNotCorrect() {
         Assertions.assertThrows(MyMethodArgumentTypeMismatchException.class,
-                () -> serviceBookingInBD.getBookingsByBookerIdOrOwnerId(1, "StatusNotCorrect", "booker"));
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(0, "StatusNotCorrect",
+                        0,1,"booker"));
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenUserIsNotExist() {
         Assertions.assertThrows(NotFoundException.class,
-                () -> serviceBookingInBD.getBookingsByBookerIdOrOwnerId(10000, "ALL", "booker"));
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(10000, "ALL",
+                        0,1,"booker"));
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenALLIsOK() {
         User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(user.getId(), "ALL", "").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",
+                        0,1,"").size());
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenFUTUREBooking() {
         User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(booker.getId(), "FUTURE", "").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "FUTURE",
+                        0,1,"").size());
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenCURRENTBooking() {
         User user = userRepository.save(User.builder().id(1).name("Name").email("email@email").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(user.getId(), "CURRENT", "").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "CURRENT",
+                        0,1,"").size());
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenPASTBooking() {
         User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(user.getId(), "PAST", "").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "PAST",
+                        0,1,"").size());
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenWATINGBooking() {
         User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(user.getId(), "WAITING", "").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "WAITING",
+                        0,1,"").size());
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdWhenREJECTBookingBOOKER() {
         User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
         Assertions.assertEquals(0,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(booker.getId(), "REJECTED", "booker").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "REJECTED",
+                        0,1, "booker").size());
     }
 
     @Test
@@ -236,6 +244,21 @@ public class BookingTest {
         bookingRepository.getById(bookingDTOOutput.getId()).setStatus(TypeOfStatus.REJECTED);
         System.out.println(userRepository.findAll());
         Assertions.assertEquals(1,
-                serviceBookingInBD.getBookingsByBookerIdOrOwnerId(owner.getId(), "REJECTED", "owner").size());
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(owner.getId(), "REJECTED",
+                        0,1,"owner").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdTestWhenStartAndFinishEquels() {
+        User user = userRepository.save(User.builder().id(0).name("Name").email("Name@mail.ru").build());
+        Assertions.assertThrows(ValidationException.class,
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",1, 1, ""));
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdTestWhenStartNegativeOrAmountIsNegative() {
+        User user = userRepository.save(User.builder().id(0).name("Name").email("Name@mail.ru").build());
+        Assertions.assertThrows(ValidationException.class,
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",-1, 1, ""));
     }
 }
