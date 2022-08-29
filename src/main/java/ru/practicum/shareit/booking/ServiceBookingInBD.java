@@ -318,9 +318,9 @@ public class ServiceBookingInBD implements BookingService {
             throw new ValidationException("Ошибка валидации, выбрано ноль страниц");
         }
         Page<Booking> pageOwner = bookingRepository.findAllByItemOwnerId(userId,
-                PageRequest.of(from, size));
+                PageRequest.of(from, from + size));
         Page<Booking> pageBooker = bookingRepository.findAllByBookerId(userId,
-                PageRequest.of(from, size));
+                PageRequest.of(from, from + size));
         List<Booking> bookingListOwner = pageOwner.stream()
                 .map(booking -> bookingRepository.getById(booking.getId()))
                 .collect(toList());
