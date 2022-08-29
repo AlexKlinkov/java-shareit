@@ -92,21 +92,6 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void updateStatusOfBookingTest() throws Exception {
-        when(bookingService.updateStatusOfBooking(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
-                .thenReturn(bookingDTOOutput);
-
-        mvc.perform(get("/bookings/1")
-                        .content(mapper.writeValueAsString(bookingDTOOutput))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .queryParam("approved", "true"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     public void findBookingByIdAndUserIdTest() throws Exception {
         when(bookingService.findBookingByIdAndUserId(Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookingDTOOutput);
@@ -149,5 +134,21 @@ public class BookingControllerTest {
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", is(bookingDTOOutput.getId())));
+    }
+
+    @Test
+    public void updateStatusOfBookingTest() throws Exception {
+        when(bookingService.updateStatusOfBooking(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
+                .thenReturn(bookingDTOOutput);
+
+        mvc.perform(get("/bookings/1")
+                        .content(mapper.writeValueAsString(bookingDTOOutput))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 2)
+                        .queryParam("approved", "true"))
+                .andExpect(status().isOk());
+
     }
 }

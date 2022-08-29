@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,9 +9,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
-import ru.practicum.shareit.item.ServiceItem;
 import ru.practicum.shareit.item.ServiceItemInDB;
-import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -114,12 +111,6 @@ public class ServiceItemRequestInBD implements ServiceItemRequest {
             throw new NotFoundException("При получении запроса на список вещей, конкретного пользователя, " +
                     "данный пользователь не был найден");
         }
-        Comparator<ItemRequestDTOOutput> comparatorByData = new Comparator<>() {
-            @Override
-            public int compare(ItemRequestDTOOutput o1, ItemRequestDTOOutput o2) {
-                return o1.getCreated().compareTo(o2.getCreated());
-            }
-        };
         log.debug("Получаем список всех запросов пользователя в методе по возвращению всех запросов пользователя " +
                 "не по странично !!");
         List<ItemRequest> ListFromBD = new ArrayList<>(serviceItem.getItemRequestRepository().findAllByRequestor_Id(userId));
@@ -130,7 +121,7 @@ public class ServiceItemRequestInBD implements ServiceItemRequest {
                         itemRequestMapper.itemRequestDTOOutPutFromItemRequest(itemRequest, userId);
                 returnList.add(itemRequestDTOOutputWithExtraFields);
             }
-            returnList.sort(comparatorByData);
+            returnList.sort(Comparator.comparing(ItemRequestDTOOutput::getCreated));
         }
         return returnList;
     }

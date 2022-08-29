@@ -11,12 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemDTO;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ServiceItemInDB;
 import ru.practicum.shareit.item.comment.CommentDTOInput;
 import ru.practicum.shareit.item.comment.CommentDTOOutput;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.ServiceUserInBD;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDTO;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -39,6 +43,8 @@ public class ItemTest {
     private UserRepository userRepository;
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
     private ItemDTO itemDTO;
     private UserDTO owner;
     private UserDTO requestor;
@@ -54,8 +60,8 @@ public class ItemTest {
     public void createItemTest () {
         serviceUserInBD.create(owner);
         serviceUserInBD.create(requestor);
-        ItemDTO itemDTOReturn = serviceItemInDB.create(15, itemDTO);
-        itemDTO.setId(8);
+        ItemDTO itemDTOReturn = serviceItemInDB.create(17, itemDTO);
+        itemDTO.setId(9);
         Assertions.assertEquals(itemDTO, itemDTOReturn);
     }
 
@@ -69,9 +75,9 @@ public class ItemTest {
         itemDTOUpdate.setName(null);
         itemDTOUpdate.setOwner(null);
         itemDTOUpdate.setAvailable(null);
-        serviceItemInDB.create(13, itemDTO);
-        ItemDTO itemDTOReturn = serviceItemInDB.update(13, 7, itemDTOUpdate);
-        itemDTO.setId(7);
+        serviceItemInDB.create(15, itemDTO);
+        ItemDTO itemDTOReturn = serviceItemInDB.update(15, 8, itemDTOUpdate);
+        itemDTO.setId(8);
         Assertions.assertEquals(itemDTO, itemDTOReturn);
     }
 
@@ -106,7 +112,7 @@ public class ItemTest {
     public void checkAlreadyExistItemTest () {
         serviceUserInBD.create(owner);
         serviceUserInBD.create(requestor);
-        serviceItemInDB.create(17, itemDTO);
+        serviceItemInDB.create(19, itemDTO);
         boolean itemDTOReturn = serviceItemInDB.checkAlreadyExistItem(itemDTO);
         Assertions.assertTrue(itemDTOReturn);
     }
@@ -115,7 +121,7 @@ public class ItemTest {
     public void addCommentTestErrorWhenBookerDidNotTakeAnItem () {
         serviceUserInBD.create(owner);
         serviceUserInBD.create(requestor);
-        serviceItemInDB.create(9, itemDTO);
+        serviceItemInDB.create(11, itemDTO);
         CommentDTOInput commentDTOInput = new CommentDTOInput();
         commentDTOInput.setText("comment");
         Assertions.assertThrows(ValidationException.class,
@@ -138,31 +144,32 @@ public class ItemTest {
     public void addCommentTestWhenIsOk () throws InterruptedException {
         serviceUserInBD.create(owner);
         serviceUserInBD.create(requestor);
-        serviceItemInDB.create(11, itemDTO);
+        serviceItemInDB.create(14, itemDTO);
         CommentDTOInput commentDTOInput = new CommentDTOInput();
         commentDTOInput.setText("goodComment");
         Booking booking = new Booking();
-        booking.setItem(itemRepository.getById(6));
-        booking.setBooker(userRepository.getById(12));
+        booking.setItem(itemRepository.getById(7));
+        booking.setBooker(userRepository.getById(13));
         booking.setStatus(TypeOfStatus.APPROVED);
         booking.setId(1);
         booking.setStart(LocalDateTime.now().plusSeconds(5));
         booking.setEnd(LocalDateTime.now().plusSeconds(7));
         bookingRepository.save(booking);
         Thread.sleep(8000);
-        CommentDTOOutput commentDTOOutput = serviceItemInDB.addComment(12,6, commentDTOInput);
+        CommentDTOOutput commentDTOOutput = serviceItemInDB.addComment(13,7, commentDTOInput);
         Assertions.assertEquals(commentDTOInput.getText(), commentDTOOutput.getText());
     }
 
-/*    @Test
+    @Test
     public void getItemDTOByRequestIdTest () {
-        serviceUserInBD.create(owner);
-        serviceUserInBD.create(requestor);
-        serviceItemInDB.create(1, itemDTO);
-        ItemRequestDTOInput itemRequestDTOInput = new ItemRequestDTOInput("hammer");
-        itemRequestDTOInput.setId(1);
-        serviceItemRequestInBD.create(2,  itemRequestDTOInput);
-        ItemDTO itemDTOReturn = serviceItemInDB.getItemDTOByRequestId(1);
-        Assertions.assertEquals(itemDTO.getRequestId(), itemDTOReturn.getRequestId());
-    }*/
+        User user = userRepository.save(User.builder().id(0).name("Name").email("new@mail.ru").build());
+        User user8 = userRepository.save(User.builder().id(0).name("Name8").email("new8@mail.ru").build());
+        ItemRequest itemRequest = new ItemRequest(0, "Description", user, LocalDateTime.now().plusSeconds(10));
+        ItemRequest itemRequestReturn = itemRequestRepository.save(itemRequest);
+        itemRepository.save(new Item(1, "newItem", "Des", true, user8,
+                itemRequestReturn
+        ));
+        ItemDTO itemDTOReturn = serviceItemInDB.getItemDTOByRequestId(itemRequestReturn.getId());
+        Assertions.assertEquals(1, itemDTOReturn.getRequestId());
+    }
 }

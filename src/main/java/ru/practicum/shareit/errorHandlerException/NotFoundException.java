@@ -5,8 +5,4 @@ public class NotFoundException extends RuntimeException {
         super(message);
     }
 
-    @Override
-    public String getMessage() {
-        return super.getMessage();
-    }
 }

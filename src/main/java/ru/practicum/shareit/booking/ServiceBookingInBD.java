@@ -131,12 +131,6 @@ public class ServiceBookingInBD implements BookingService {
             throw new NotFoundException("Пользователя с таким ID нет, не получилось получить информацию по бронированию");
         }
         List<BookingDTOOutput> returnList = new ArrayList<>(); // Список для возврата результата
-        Comparator<Booking> compareByStartDate = new Comparator<>() {
-            @Override
-            public int compare(Booking o1, Booking o2) {
-                return o1.getStart().compareTo(o2.getStart());
-            }
-        };
         log.debug("Получаем список со всеми бронированиями отсортированными от новых к старым по дате старта");
         List<Booking> allBookings = new ArrayList<>(bookingRepository.findAll());
         List<Booking> bookings = new ArrayList<>();
@@ -145,7 +139,7 @@ public class ServiceBookingInBD implements BookingService {
                 bookings.add(book);
             }
         }
-        bookings.sort(Collections.reverseOrder(compareByStartDate));
+        bookings.sort(Comparator.comparing(Booking::getStart).reversed());
         log.debug("Получение списка всех бронирований текущего пользователя");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         if (state.equals("ALL")) {

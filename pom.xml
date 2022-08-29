@@ -229,7 +229,7 @@
 											<limit>
 												<counter>LINE</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.9</minimum>
+												<minimum>0.89</minimum>
 											</limit>
 											<limit>
 												<counter>BRANCH</counter>
@@ -301,11 +301,11 @@
                             <artifactId>jacoco-maven-plugin</artifactId>
 							<configuration>
 								<excludes>
-									<exclude>ru/practicum/**/*MapperImpl.*</exclude>
-									<exclude>ru/practicum/shareit/**/*Exception.*</exclude>
-									<exclude>ru/practicum/shareit/**/*Query.*</exclude>
-									<exclude>ru/practicum/shareit/**/*Comment.*</exclude>
+									<exclude>ru/practicum/shareit/**/*Impl.*</exclude>
+									<exclude>ru/practicum/shareit/**/*Initialization.*</exclude>
 									<exclude>ru/practicum/shareit/**/*Handler.*</exclude>
+									<exclude>ru/practicum/shareit/**/*ShareItApp.*</exclude>
+									<exclude>ru/practicum/shareit/**/BookingDTOOutput.*</exclude>
 								</excludes>
 							</configuration>
                         </plugin>

@@ -102,13 +102,7 @@ public class ServiceItemInDB implements ServiceItem {
                 returnList.add(itemMapper.itemDTOFromItem(item));
             }
         }
-        Comparator<ItemDTO> compareByStartDate = new Comparator<>() {
-            @Override
-            public int compare(ItemDTO o1, ItemDTO o2) {
-                return o1.getId() - o2.getId();
-            }
-        };
-        returnList.sort(compareByStartDate);
+        returnList.sort(Comparator.comparing(ItemDTO::getId));
         return returnList;
     }
 
