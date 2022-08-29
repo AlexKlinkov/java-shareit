@@ -313,7 +313,7 @@ public class ServiceBookingInBD implements BookingService {
                     "Отрицательное количество страниц или и то и другое вместе");
         }
         log.debug("Проверяем, что старт и финиш  не равны друг другу");
-        if (from == size) {
+        if (from == from + size) {
             System.out.println("Тут");
             throw new ValidationException("Ошибка валидации, выбрано ноль страниц");
         }

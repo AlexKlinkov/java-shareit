@@ -252,7 +252,7 @@ public class BookingTest {
     public void getBookingsByBookerIdOrOwnerIdTestWhenStartAndFinishEquels() {
         User user = userRepository.save(User.builder().id(0).name("Name").email("Name@mail.ru").build());
         Assertions.assertThrows(ValidationException.class,
-                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",1, 1, ""));
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",1, 0, ""));
     }
 
     @Test
