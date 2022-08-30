@@ -151,7 +151,6 @@ public class ServiceBookingInBD implements BookingService {
         }
 
         log.debug("Получаем постраничный список с Bookings");
-        List<BookingDTOOutput> listReturn = new ArrayList<>();
         Page<Booking> page = null;
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         if (key.equals("ALL")) {
@@ -203,15 +202,16 @@ public class ServiceBookingInBD implements BookingService {
                         PageRequest.of(from, size));
             }
         }
-        return getBookingDTOOutputs(from, size, listReturn, page);
+        return getBookingDTOOutputs(from, size, page);
     }
 
-    private List<BookingDTOOutput> getBookingDTOOutputs(int from, int size, List<BookingDTOOutput> listReturn,
-                                                        Page<Booking> pageOwner) {
+    private List<BookingDTOOutput> getBookingDTOOutputs(int from, int size,
+                                                        Page<Booking> page) {
+        List<BookingDTOOutput> listReturn = new ArrayList<>(size);
         List<Booking> bookingList;
-        bookingList = pageOwner.stream()
+        bookingList = page.stream()
                 .map(booking -> bookingRepository.getById(booking.getId()))
-                .filter(booking -> booking.getId() >= from)
+                .skip(from)
                 .limit(size)
                 .collect(toList());
         for (Booking book : bookingList) {
