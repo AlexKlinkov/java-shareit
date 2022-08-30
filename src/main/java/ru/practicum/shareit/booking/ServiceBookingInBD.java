@@ -221,6 +221,6 @@ public class ServiceBookingInBD implements BookingService {
             listReturn.add(bookingMapper.bookingDTOOutputFromBooking(book));
         }
         listReturn.sort(Comparator.comparing(BookingDTOOutput::getStart).reversed());
-        return listReturn.stream().limit(size).collect(toList());
+        return listReturn.stream().limit(size+from).collect(toList());
     }
 }
