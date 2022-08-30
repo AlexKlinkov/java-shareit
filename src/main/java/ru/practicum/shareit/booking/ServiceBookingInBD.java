@@ -130,6 +130,7 @@ public class ServiceBookingInBD implements BookingService {
     @Override
     public List<BookingDTOOutput> getBookingsByOwnerIdOrBookingID(int userId, String state,
                                                                   int from, int size, String key) {
+        from = 0;
         log.debug("Проверяем поле статус  запросе");
         if (!state.equals("ALL") && !state.equals("CURRENT") && !state.equals("PAST") && !state.equals("FUTURE") &&
                 !state.equals("WAITING") && !state.equals("REJECTED")) {
@@ -151,8 +152,11 @@ public class ServiceBookingInBD implements BookingService {
         }
 
         log.debug("Получаем постраничный список с Bookings");
-        Page<Booking> page = null;
+        Page<Booking> page = Page.empty();
         LocalDateTime now = LocalDateTime.now(); // Текущее время
+        System.out.println(state);
+        System.out.println(from);
+        System.out.println(size);
         if (key.equals("ALL")) {
             if (state.equals("ALL")) {
                 page = bookingRepository.findAllByBookerId(userId, PageRequest.of(from, size));
@@ -179,7 +183,9 @@ public class ServiceBookingInBD implements BookingService {
             }
         } else {
             if (state.equals("ALL")) {
+                System.out.println("Я тут");
                 page = bookingRepository.findAllByItemOwnerId(userId, PageRequest.of(from, size));
+                System.out.println(page);
             }
             if (state.equals("FUTURE")) {
                 page = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now,
