@@ -211,13 +211,11 @@ public class ServiceBookingInBD implements BookingService {
         List<Booking> bookingList;
         bookingList = page.stream()
                 .map(booking -> bookingRepository.getById(booking.getId()))
-                .skip(from)
-                .limit(size)
                 .collect(toList());
         for (Booking book : bookingList) {
             listReturn.add(bookingMapper.bookingDTOOutputFromBooking(book));
         }
         listReturn.sort(Comparator.comparing(BookingDTOOutput::getStart).reversed());
-        return listReturn;
+        return listReturn.stream().skip(from).limit(size).collect(toList());
     }
 }
