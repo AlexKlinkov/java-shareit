@@ -107,10 +107,10 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.id", is(bookingDTOOutput.getId())));
     }
 
-/*    @Test
+    @Test
     public void getBookingsByBookerIdOrOwnerIdTest() throws Exception {
         when(bookingService.getBookingsByOwnerIdOrBookingID(Mockito.anyInt(), Mockito.anyString(),
-                Mockito.anyInt(), Mockito.anyInt(), "booker"))
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
                 .thenReturn(List.of(bookingDTOOutput));
 
         mvc.perform(get("/bookings")
@@ -129,7 +129,7 @@ public class BookingControllerTest {
     @Test
     public void getBookingsByOwnerIdTest() throws Exception {
         when(bookingService.getBookingsByOwnerIdOrBookingID(Mockito.anyInt(), Mockito.anyString(),
-                Mockito.anyInt(), Mockito.anyInt(), "owner"))
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString()))
                 .thenReturn(List.of(bookingDTOOutput));
 
         mvc.perform(get("/bookings/owner")
@@ -137,10 +137,13 @@ public class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", 1)
+                        .queryParam("state", "ALL")
+                        .queryParam("from", "0")
+                        .queryParam("size", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", is(bookingDTOOutput.getId())));
-    }*/
+    }
 
     @Test
     public void updateStatusOfBookingTest() throws Exception {

@@ -45,9 +45,7 @@ public class BookingController {
             @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
             @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
             @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, String key) {
-        System.out.println(from);
-        System.out.println(size);
-        return bookingService.getBookingsByOwnerIdOrBookingID(userId, state, from, size, "booker");
+        return bookingService.getBookingsByOwnerIdOrBookingID(userId, state, from, size, "ALL");
     }
 
     @GetMapping(path = "/owner")

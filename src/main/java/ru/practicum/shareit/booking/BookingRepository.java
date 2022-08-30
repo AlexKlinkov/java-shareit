@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.practicum.shareit.request.ItemRequest;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,20 +23,21 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Page<Booking> findAllByBookerId(Integer userId, Pageable pageable);
     Page<Booking> findAllByItemOwnerId(Integer userId, Pageable pageable);
     Page<Booking> findAllByBookerIdAndStartIsAfter (Integer userId, LocalDateTime localDateTime,
-                                                                 Pageable pageable);
+                                                    Pageable pageable);
     Page<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfter(Integer userId, LocalDateTime start,
-                                                                               LocalDateTime finish, Pageable pageable);
+                                                                 LocalDateTime finish, Pageable pageable);
     Page<Booking> findAllByBookerIdAndEndIsBefore(Integer userId, LocalDateTime localDateTime,
-                                                                   Pageable pageable);
+                                                  Pageable pageable);
     Page<Booking> findAllByBookerIdAndStatus(Integer userId, TypeOfStatus typeOfStatus,
-                                                          Pageable pageable);
+                                             Pageable pageable);
 
     Page<Booking> findAllByItemOwnerIdAndStartIsAfter (Integer userId, LocalDateTime localDateTime,
-                                                    Pageable pageable);
+                                                       Pageable pageable);
     Page<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfter(Integer userId, LocalDateTime start,
-                                                                 LocalDateTime finish, Pageable pageable);
+                                                                    LocalDateTime finish, Pageable pageable);
     Page<Booking> findAllByItemOwnerIdAndEndIsBefore(Integer userId, LocalDateTime localDateTime,
-                                                  Pageable pageable);
+                                                     Pageable pageable);
     Page<Booking> findAllByItemOwnerIdAndStatus(Integer userId, TypeOfStatus typeOfStatus,
-                                                          Pageable pageable);
+                                                Pageable pageable);
+
 }
