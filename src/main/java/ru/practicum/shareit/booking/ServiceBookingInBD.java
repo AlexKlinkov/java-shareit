@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.MyPageable.MyPageable;
 import ru.practicum.shareit.errorHandlerException.MyMethodArgumentTypeMismatchException;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
@@ -153,61 +154,56 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получаем постраничный список с Bookings");
         Page<Booking> page = Page.empty();
         LocalDateTime now = LocalDateTime.now(); // Текущее время
-        System.out.println(state);
-        System.out.println(from);
-        System.out.println(size);
+        Pageable pageable = MyPageable.of(from, size);
         if (key.equals("ALL")) {
             if (state.equals("ALL")) {
-                page = bookingRepository.findAllByBookerId(userId, PageRequest.of(0, size));
+                page = bookingRepository.findAllByBookerId(userId, pageable);
             }
             if (state.equals("FUTURE")) {
-                page = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now,
-                        PageRequest.of(0, size));
+                page = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now, pageable);
             }
             if (state.equals("CURRENT")) {
                 page = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, now,
-                        now, PageRequest.of(0, size));
+                        now, pageable);
             }
             if (state.equals("PAST")) {
                 page = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, now,
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("WAITING")) {
                 page = bookingRepository.findAllByBookerIdAndStatus(userId, TypeOfStatus.WAITING,
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("REJECTED")) {
                 page = bookingRepository.findAllByBookerIdAndStatus(userId, TypeOfStatus.REJECTED,
-                        PageRequest.of(0, size));
+                        pageable);
             }
         } else {
             if (state.equals("ALL")) {
-                System.out.println("Я тут");
-                page = bookingRepository.findAllByItemOwnerId(userId, PageRequest.of(0, size));
-                System.out.println(page);
+                page = bookingRepository.findAllByItemOwnerId(userId, pageable);
             }
             if (state.equals("FUTURE")) {
                 page = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now,
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("CURRENT")) {
                 page = bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId, now, now,
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("PAST")) {
                 page = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(),
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("WAITING")) {
                 page = bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.WAITING,
-                        PageRequest.of(0, size));
+                        pageable);
             }
             if (state.equals("REJECTED")) {
                 page = bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.REJECTED,
-                        PageRequest.of(0, size));
+                        pageable);
             }
         }
-        return getBookingDTOOutputs(from, size, page);
+        return getBookingDTOOutputs(pageable.getPageNumber(), pageable.getPageSize(), page);
     }
 
     private List<BookingDTOOutput> getBookingDTOOutputs(int from, int size,
@@ -221,6 +217,6 @@ public class ServiceBookingInBD implements BookingService {
             listReturn.add(bookingMapper.bookingDTOOutputFromBooking(book));
         }
         listReturn.sort(Comparator.comparing(BookingDTOOutput::getStart).reversed());
-        return listReturn.stream().limit(size+from).collect(toList());
+        return listReturn.stream().limit(size).collect(toList());
     }
 }
