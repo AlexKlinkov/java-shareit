@@ -306,6 +306,7 @@
 									<exclude>ru/practicum/shareit/**/*Handler.*</exclude>
 									<exclude>ru/practicum/shareit/**/*ShareItApp.*</exclude>
 									<exclude>ru/practicum/shareit/**/BookingDTOOutput.*</exclude>
+									<exclude>ru/practicum/shareit/**/MyPageable.*</exclude>
 								</excludes>
 							</configuration>
                         </plugin>
