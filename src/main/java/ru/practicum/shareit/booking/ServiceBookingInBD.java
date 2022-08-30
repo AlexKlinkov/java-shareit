@@ -178,7 +178,6 @@ public class ServiceBookingInBD implements BookingService {
                 page = bookingRepository.findAllByBookerIdAndStatus(userId, TypeOfStatus.REJECTED,
                         PageRequest.of(from, size));
             }
-            return getBookingDTOOutputs(from, size, listReturn, page);
         } else {
             if (state.equals("ALL")) {
                 page = bookingRepository.findAllByItemOwnerId(userId, PageRequest.of(from, size));
@@ -203,8 +202,8 @@ public class ServiceBookingInBD implements BookingService {
                 page = bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.REJECTED,
                         PageRequest.of(from, size));
             }
-            return getBookingDTOOutputs(from, size, listReturn, page);
         }
+        return getBookingDTOOutputs(from, size, listReturn, page);
     }
 
     private List<BookingDTOOutput> getBookingDTOOutputs(int from, int size, List<BookingDTOOutput> listReturn,
@@ -212,7 +211,7 @@ public class ServiceBookingInBD implements BookingService {
         List<Booking> bookingList;
         bookingList = pageOwner.stream()
                 .map(booking -> bookingRepository.getById(booking.getId()))
-                .skip(from)
+                .filter(booking -> booking.getId() >= from)
                 .limit(size)
                 .collect(toList());
         for (Booking book : bookingList) {
