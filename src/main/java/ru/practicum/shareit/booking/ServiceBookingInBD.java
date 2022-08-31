@@ -152,12 +152,12 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получаем постраничный список с Bookings");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
-        int indexOfPage;
-        if (from > 0) {
+        int indexOfPage = 0;
+/*        if (from > 0) {
             indexOfPage = from - 1;
         } else {
             indexOfPage = 0;
-        }
+        }*/
         Pageable page = PageRequest.of(indexOfPage, size, Sort.by("start").descending());
         int amountOfPages;
         if (key.equals("ALL")) {
@@ -214,7 +214,7 @@ public class ServiceBookingInBD implements BookingService {
                 amountOfPages = bookingRepository.findAllByItemOwnerId(userId, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByItemOwnerId(userId, page));
-                    System.out.println(finalReturnList);
+                    System.out.println("Page " + i);
                     page.next();
                 }
             }
