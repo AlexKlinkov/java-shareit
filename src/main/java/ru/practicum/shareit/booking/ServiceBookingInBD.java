@@ -153,9 +153,9 @@ public class ServiceBookingInBD implements BookingService {
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
         int indexOfPage = 0;
-        if (from > 0) {
+/*        if (from > 0) {
             indexOfPage = from - 1;
-        }
+        }*/
         Pageable page = PageRequest.of(indexOfPage, size, Sort.by("start").descending());
         int amountOfPages;
         if (key.equals("ALL")) {
@@ -262,7 +262,7 @@ public class ServiceBookingInBD implements BookingService {
                 }
             }
         }
-        finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
+        //finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
         return finalReturnList.stream().limit(size).collect(toList());
     }
 
