@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandlerException.MyMethodArgumentTypeMismatchException;
@@ -151,8 +152,13 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получаем постраничный список с Bookings");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
-        int indexOfPage = 0;
-        Pageable page = PageRequest.of(indexOfPage, size);
+        int indexOfPage;
+        if (from > 0) {
+            indexOfPage = from - 1;
+        } else {
+            indexOfPage = 0;
+        }
+        Pageable page = PageRequest.of(indexOfPage, size, Sort.by("start").descending());
         int amountOfPages;
         if (key.equals("ALL")) {
             if (state.equals("ALL")) {
@@ -255,7 +261,7 @@ public class ServiceBookingInBD implements BookingService {
                 }
             }
         }
-        finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getStart).reversed());
+        finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
         return finalReturnList.stream().limit(size).collect(toList());
     }
 
