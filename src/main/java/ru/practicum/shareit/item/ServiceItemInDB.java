@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +63,7 @@ public class ServiceItemInDB implements ServiceItem {
         log.debug("Получаем ту вещь из бд которую нужно обновить");
         ItemDTO previousItem = getItemById(ownerId, itemId);
         log.debug("Проверяем, что хозяин вещи обновляет свою вещь, а не чью-то чужую");
-        if (previousItem.getOwner().getId() != ownerId){
+        if (previousItem.getOwner().getId() != ownerId) {
             throw new NotFoundException("Пользователь пытается обновить данные по вещи, которая ему не принадлежит");
         }
         log.debug("Оставляем значение полей от предущей вещи, если у новой они пустые или null при обновлении");
@@ -142,11 +141,11 @@ public class ServiceItemInDB implements ServiceItem {
         return returnAllFoundItemsByText;
     }
 
-    public boolean checkAlreadyExistItem (ItemDTO item) {
+    public boolean checkAlreadyExistItem(ItemDTO item) {
         List<Item> items = new ArrayList<>(itemRepository.findAll());
         for (Item itemInBD : items) {
             if (itemInBD.getName().equals(item.getName()) &&
-                itemInBD.getDescription().equals(item.getDescription())){
+                    itemInBD.getDescription().equals(item.getDescription())) {
                 return true;
             }
         }
@@ -154,7 +153,7 @@ public class ServiceItemInDB implements ServiceItem {
     }
 
     @Override
-    public CommentDTOOutput addComment (int userId, int itemId, CommentDTOInput commentDTOInput) {
+    public CommentDTOOutput addComment(int userId, int itemId, CommentDTOInput commentDTOInput) {
         log.debug("Пользователь, который брал вещь в пользование может оставить комментарий, " +
                 "Проверяем, что текст комменатрия не пустой");
         LocalDateTime now = LocalDateTime.now();
@@ -171,13 +170,13 @@ public class ServiceItemInDB implements ServiceItem {
         }
         log.debug("Сохраняем комментарий в БД");
         Comment commentInBD =
-                commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId,commentDTOInput));
+                commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId, commentDTOInput));
         return commentMapper.commentDTOOutputFromComment(commentInBD);
 
     }
 
     @Override
-    public ItemDTO getItemDTOByRequestId (Integer requestId) {
+    public ItemDTO getItemDTOByRequestId(Integer requestId) {
         log.debug("Получаем список всех вещей, чтоб потом вернуть вещь по requestID");
         List<Item> allItems = new ArrayList<>(itemRepository.findAll());
         for (Item item : allItems) {

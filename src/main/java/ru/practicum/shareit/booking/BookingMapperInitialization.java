@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Component("BookingMapperInitialization")
 public class BookingMapperInitialization implements BookingMapper {
 
-        private final UserRepository userRepository;
-        private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Autowired
     public BookingMapperInitialization(UserRepository userRepository, ItemRepository itemRepository) {
@@ -22,47 +22,47 @@ public class BookingMapperInitialization implements BookingMapper {
     }
 
     @Override
-        public Booking bookingFromBookingDTOInput(BookingDTOInput bookingDTO, Integer bookerId) {
-            if ( bookingDTO == null && bookerId == null ) {
-                return null;
-            }
-
-            Booking booking1 = new Booking();
-
-            if ( bookingDTO != null ) {
-                booking1.setStart( bookingDTO.getStart() );
-                booking1.setEnd( bookingDTO.getEnd() );
-                booking1.setItem(itemRepository.getById(bookingDTO.getItemId()));
-                booking1.setBooker( userRepository.getById(bookerId));
-                booking1.setStatus(TypeOfStatus.WAITING);
-            }
-
-            return booking1;
+    public Booking bookingFromBookingDTOInput(BookingDTOInput bookingDTO, Integer bookerId) {
+        if (bookingDTO == null && bookerId == null) {
+            return null;
         }
 
-        @Override
-        public BookingDTOOutput bookingDTOOutputFromBooking(Booking booking) {
-            if ( booking == null ) {
-                return null;
-            }
+        Booking booking1 = new Booking();
 
-            Integer id = null;
-            LocalDateTime start = null;
-            LocalDateTime end = null;
-            UserDTO booker = null;
-            ItemDTO item = null;
-            TypeOfStatus status = null;
-
-            id = booking.getId();
-            start = booking.getStart();
-            end = booking.getEnd();
-            booker = new UserDTO(booking.getBooker().getId(), booking.getBooker().getName(), booking.getBooker().getEmail());
-            item = new ItemDTO(booking.getItem().getId(), booking.getItem().getName(), null, null, null,
-                    null, null, null, null);
-            status = booking.getStatus();
-
-            BookingDTOOutput bookingDTOOutput = new BookingDTOOutput( id, start, end, booker,item, status );
-
-            return bookingDTOOutput;
+        if (bookingDTO != null) {
+            booking1.setStart(bookingDTO.getStart());
+            booking1.setEnd(bookingDTO.getEnd());
+            booking1.setItem(itemRepository.getById(bookingDTO.getItemId()));
+            booking1.setBooker(userRepository.getById(bookerId));
+            booking1.setStatus(TypeOfStatus.WAITING);
         }
+
+        return booking1;
     }
+
+    @Override
+    public BookingDTOOutput bookingDTOOutputFromBooking(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
+        Integer id = null;
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        UserDTO booker = null;
+        ItemDTO item = null;
+        TypeOfStatus status = null;
+
+        id = booking.getId();
+        start = booking.getStart();
+        end = booking.getEnd();
+        booker = new UserDTO(booking.getBooker().getId(), booking.getBooker().getName(), booking.getBooker().getEmail());
+        item = new ItemDTO(booking.getItem().getId(), booking.getItem().getName(), null, null, null,
+                null, null, null, null);
+        status = booking.getStatus();
+
+        BookingDTOOutput bookingDTOOutput = new BookingDTOOutput(id, start, end, booker, item, status);
+
+        return bookingDTOOutput;
+    }
+}

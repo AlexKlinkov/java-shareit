@@ -1,13 +1,14 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 
 public interface ServiceItemRequest {
-    ItemRequestDTOOutput create (int userId, ItemRequestDTOInput itemRequestDTOInput);
+    ItemRequestDTOOutput create(int userId, ItemRequestDTOInput itemRequestDTOInput);
+
     List<ItemRequestDTOOutput> getItemRequestsOfUser(int userId, Integer from, Integer size, String sort);
-    ItemRequestDTOOutput getRequestByRequestIdAndUserId (int userId, int requestId);
-    List<ItemRequestDTOOutput> getItemRequestsByUserId (int userId);
+
+    ItemRequestDTOOutput getRequestByRequestIdAndUserId(int userId, int requestId);
+
+    List<ItemRequestDTOOutput> getItemRequestsByUserId(int userId);
 }

@@ -261,4 +261,10 @@ public class BookingTest {
         Assertions.assertThrows(ValidationException.class,
                 () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",-1, 1, ""));
     }
+
+/*    @Test
+    public void getBookingDTOOutputsTest1() {
+        Page<Booking> page;
+        Assertions.assertNotNull(serviceBookingInBD.getBookingDTOOutputs(page, 1, 2, 3));
+    }*/
 }

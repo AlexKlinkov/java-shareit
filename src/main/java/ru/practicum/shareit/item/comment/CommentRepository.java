@@ -7,5 +7,5 @@ import java.util.List;
 
 @RepositoryRestResource(path = "comments")
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
-    List<Comment> findAllByItemId (Integer itemId);
+    List<Comment> findAllByItemId(Integer itemId);
 }

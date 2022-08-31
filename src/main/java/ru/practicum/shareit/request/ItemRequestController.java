@@ -23,24 +23,26 @@ public class ItemRequestController {
                                        @RequestBody @Valid ItemRequestDTOInput itemRequestDTOInput) {
         return serviceItemRequest.create(userId, itemRequestDTOInput);
     }
+
     // Метод возвращающий все запросы на вещи созданные одним пользователем
     @GetMapping
-    public List<ItemRequestDTOOutput> getItemRequestsByUserId (@RequestHeader(value = "X-Sharer-User-Id") int userId) {
+    public List<ItemRequestDTOOutput> getItemRequestsByUserId(@RequestHeader(value = "X-Sharer-User-Id") int userId) {
         return serviceItemRequest.getItemRequestsByUserId(userId);
     }
+
     // Метод возвращабщий конкретный запрос на вещь конкретного пользователя
     @GetMapping(path = "/{requestId}")
-    public ItemRequestDTOOutput getRequestByRequestIdAndUserId (@RequestHeader(value = "X-Sharer-User-Id") int userId,
-                                                                @PathVariable int requestId) {
+    public ItemRequestDTOOutput getRequestByRequestIdAndUserId(@RequestHeader(value = "X-Sharer-User-Id") int userId,
+                                                               @PathVariable int requestId) {
         return serviceItemRequest.getRequestByRequestIdAndUserId(userId, requestId);
     }
 
     // Метод возвращающий абсолютно все запросы на вещи по странично
     @GetMapping("/all")
-    public List<ItemRequestDTOOutput> getItemRequestsOfUser (@RequestHeader(value = "X-Sharer-User-Id") int userId,
-                           @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
-                           @RequestParam(value = "size", required = false, defaultValue = "5") Integer size,
-                           @RequestParam(value = "sort", required = false, defaultValue = "id") String sort) {
+    public List<ItemRequestDTOOutput> getItemRequestsOfUser(@RequestHeader(value = "X-Sharer-User-Id") int userId,
+                                                            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
+                                                            @RequestParam(value = "size", required = false, defaultValue = "5") Integer size,
+                                                            @RequestParam(value = "sort", required = false, defaultValue = "id") String sort) {
         return serviceItemRequest.getItemRequestsOfUser(userId, from, size, sort);
     }
 }

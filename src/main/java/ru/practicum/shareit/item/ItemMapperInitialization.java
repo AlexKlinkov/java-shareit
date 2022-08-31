@@ -50,7 +50,7 @@ public class ItemMapperInitialization implements ItemMapper {
         item1.setName(item.getName());
         item1.setDescription(item.getDescription());
         item1.setAvailable(item.getAvailable());
-        item1.setOwner( userMapper.userFromDTOUser( item.getOwner()) );
+        item1.setOwner(userMapper.userFromDTOUser(item.getOwner()));
         log.debug("В маппере вещи получаем информацию о запросе");
         if (item.getRequestId() != null) {
             item1.setRequest(itemRequestRepository.getById(item.getRequestId()));
@@ -87,7 +87,7 @@ public class ItemMapperInitialization implements ItemMapper {
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("В маппере вещи получаем список будующих бронирований (nextBooking)");
         List<Booking> bookingsInFuture = bookingRepository.findBookingsByItemIdAndItemOwnerIdAndStartAfter(
-                        item.getId(), item.getOwner().getId(), now);
+                item.getId(), item.getOwner().getId(), now);
         log.debug("Проверяем в маппере вещи, что бронирование на будущие даты данной вещи существует");
         BookingDTO nextBooking;
         if (!bookingsInFuture.isEmpty()) {

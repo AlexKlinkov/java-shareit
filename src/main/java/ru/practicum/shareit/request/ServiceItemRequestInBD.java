@@ -32,7 +32,6 @@ public class ServiceItemRequestInBD implements ServiceItemRequest {
             new ItemRequestMapperInitialization(getServiceItem());
 
 
-
     @Override
     public ItemRequestDTOOutput create(int userId, ItemRequestDTOInput itemRequestDTOInput) {
         log.debug("При создании запроса на вещь, проверяем, что такой пользователь существует");

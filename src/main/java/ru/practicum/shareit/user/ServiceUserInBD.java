@@ -37,7 +37,7 @@ public class ServiceUserInBD implements ServiceUser {
         log.debug("Обновляем пользователя");
         userRepository.save(existUserInBD);
         return getUserById(userId);
-}
+    }
 
     @Override
     public List<UserDTO> getUsers() {

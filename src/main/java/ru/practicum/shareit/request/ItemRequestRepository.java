@@ -10,6 +10,8 @@ import java.util.List;
 @RepositoryRestResource(path = "requests")
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Integer> {
     Page<ItemRequest> findAllByRequestorIdNot(Integer userId, Pageable pageable);
-    ItemRequest findAllByRequestorIdAndId (Integer userId, Integer itemRequestId);
-    List<ItemRequest> findAllByRequestor_Id (Integer userId);
+
+    ItemRequest findAllByRequestorIdAndId(Integer userId, Integer itemRequestId);
+
+    List<ItemRequest> findAllByRequestor_Id(Integer userId);
 }
