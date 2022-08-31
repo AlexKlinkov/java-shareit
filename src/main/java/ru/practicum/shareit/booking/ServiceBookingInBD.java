@@ -151,12 +151,7 @@ public class ServiceBookingInBD implements BookingService {
         log.debug("Получаем постраничный список с Bookings");
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
-        int indexOfPage;
-        if (from > 0) {
-            indexOfPage = from - 1;
-        } else {
-            indexOfPage = 0;
-        }
+        int indexOfPage = 0;
         Pageable page = PageRequest.of(indexOfPage, size);
         int amountOfPages;
         if (key.equals("ALL")) {
