@@ -153,10 +153,7 @@ public class ServiceBookingInBD implements BookingService {
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
         int indexOfPage = 0;
-/*        if (from > 0) {
-            indexOfPage = from - 1;
-        }*/
-        Pageable page = PageRequest.of(indexOfPage, size, Sort.by("start").descending());
+        Pageable page = PageRequest.of(indexOfPage, 20, Sort.by("start").descending());
         int amountOfPages;
         if (key.equals("ALL")) {
             if (state.equals("ALL")) {
@@ -263,7 +260,7 @@ public class ServiceBookingInBD implements BookingService {
             }
         }
         //finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
-        return finalReturnList.stream().limit(size).collect(toList());
+        return new ArrayList<>(finalReturnList);
     }
 
     private void getBookingDTOOutputs(Page<Booking> page, int from, int size, int iterations) {
@@ -295,9 +292,12 @@ public class ServiceBookingInBD implements BookingService {
                 }
             }
         } else {
-            bookingList = page.stream()
-                    .map(bookingMapper::bookingDTOOutputFromBooking)
-                    .collect(toList());
+            if (from == size) {
+                bookingList = page.stream()
+                        .map(bookingMapper::bookingDTOOutputFromBooking)
+                        .skip(from)
+                        .collect(toList());
+            }
         }
 
         for (BookingDTOOutput bookingDTOOutput : bookingList) {
