@@ -259,7 +259,7 @@ public class ServiceBookingInBD implements BookingService {
                 }
             }
         }
-        //finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
+        finalReturnList.sort(Comparator.comparing(BookingDTOOutput::getId).reversed());
         return finalReturnList.stream().limit(size).collect(toList());
     }
 
