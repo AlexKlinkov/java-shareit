@@ -229,7 +229,7 @@
 											<limit>
 												<counter>LINE</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.89</minimum>
+												<minimum>0.85</minimum>
 											</limit>
 											<limit>
 												<counter>BRANCH</counter>
@@ -306,7 +306,6 @@
 									<exclude>ru/practicum/shareit/**/*Handler.*</exclude>
 									<exclude>ru/practicum/shareit/**/*ShareItApp.*</exclude>
 									<exclude>ru/practicum/shareit/**/BookingDTOOutput.*</exclude>
-									<exclude>ru/practicum/shareit/**/MyPageable.*</exclude>
 								</excludes>
 							</configuration>
                         </plugin>
