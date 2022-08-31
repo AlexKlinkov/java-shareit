@@ -153,25 +153,21 @@ public class ServiceBookingInBD implements BookingService {
         LocalDateTime now = LocalDateTime.now(); // Текущее время
         log.debug("Устанавливаем индекс для перебора возвращаемых страниц");
         int indexOfPage = 0;
-/*        if (from > 0) {
-            indexOfPage = from - 1;
-        } else {
-            indexOfPage = 0;
-        }*/
         Pageable page = PageRequest.of(indexOfPage, size, Sort.by("start").descending());
         int amountOfPages;
         if (key.equals("ALL")) {
             if (state.equals("ALL")) {
                 amountOfPages = bookingRepository.findAllByBookerId(userId, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
-                    getBookingDTOOutputs(bookingRepository.findAllByBookerId(userId, page));
+                    getBookingDTOOutputs(bookingRepository.findAllByBookerId(userId, page), from, size, i);
                     page.next();
                 }
             }
             if (state.equals("FUTURE")) {
                 amountOfPages = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
-                    getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now, page));
+                    getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndStartIsAfter(userId, now, page),
+                            from, size, i);
                     page.next();
                 }
             }
@@ -180,14 +176,15 @@ public class ServiceBookingInBD implements BookingService {
                         now, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, now,
-                                    now, page));
+                            now, page), from, size, i);
                     page.next();
                 }
             }
             if (state.equals("PAST")) {
                 amountOfPages = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, now, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
-                    getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndEndIsBefore(userId, now, page));
+                    getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndEndIsBefore(userId, now, page),
+                            from, size, i);
                     page.next();
                 }
             }
@@ -196,7 +193,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndStatus(userId, TypeOfStatus.WAITING,
-                                    page));
+                            page), from, size, i);
                     page.next();
                 }
             }
@@ -205,7 +202,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByBookerIdAndStatus(userId,
-                            TypeOfStatus.REJECTED, page));
+                            TypeOfStatus.REJECTED, page), from, size, i);
                     page.next();
                 }
             }
@@ -213,15 +210,16 @@ public class ServiceBookingInBD implements BookingService {
             if (state.equals("ALL")) {
                 amountOfPages = bookingRepository.findAllByItemOwnerId(userId, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
-                    getBookingDTOOutputs(bookingRepository.findAllByItemOwnerId(userId, page));
-                    System.out.println("Page " + i);
+                    getBookingDTOOutputs(bookingRepository.findAllByItemOwnerId(userId, page),
+                            from, size, i);
                     page.next();
                 }
             }
             if (state.equals("FUTURE")) {
                 amountOfPages = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
-                    getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, page));
+                    getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, page),
+                            from, size, i);
                     page.next();
                 }
             }
@@ -230,7 +228,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId,
-                            now, now, page));
+                            now, now, page), from, size, i);
                     page.next();
                 }
             }
@@ -239,7 +237,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId,
-                            LocalDateTime.now(), page));
+                            LocalDateTime.now(), page), from, size, i);
                     page.next();
                 }
             }
@@ -248,7 +246,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.WAITING,
-                                    page));
+                            page), from, size, i);
                     page.next();
                 }
             }
@@ -257,7 +255,7 @@ public class ServiceBookingInBD implements BookingService {
                         page).getTotalPages();
                 for (int i = indexOfPage; i <= amountOfPages; i++) {
                     getBookingDTOOutputs(bookingRepository.findAllByItemOwnerIdAndStatus(userId, TypeOfStatus.REJECTED,
-                                    page));
+                            page), from, size, i);
                 }
             }
         }
@@ -265,10 +263,40 @@ public class ServiceBookingInBD implements BookingService {
         return finalReturnList.stream().limit(size).collect(toList());
     }
 
-    private void getBookingDTOOutputs(Page<Booking> page) {
-        List<BookingDTOOutput> bookingList = page.stream()
-                .map(bookingMapper::bookingDTOOutputFromBooking)
-                .collect(toList());
+    private void getBookingDTOOutputs(Page<Booking> page, int from, int size, int iterations) {
+        List<BookingDTOOutput> bookingList = new ArrayList<>();
+        if (from < size && iterations == 0) {
+            bookingList = page.stream()
+                    .map(bookingMapper::bookingDTOOutputFromBooking)
+                    .skip(from)
+                    .collect(toList());
+        }
+        if (from > size && iterations < (((double)from / size) + 1)) {
+            if (from % size == 0 && iterations <= (from/size)) {
+                bookingList = page.stream()
+                        .skip(from)
+                        .map(bookingMapper::bookingDTOOutputFromBooking)
+                        .collect(toList());
+            }
+            if (from % size != 0 && iterations <= (from/size)) {
+                if (iterations < (from / size)) {
+                    bookingList = page.stream()
+                            .skip(from)
+                            .map(bookingMapper::bookingDTOOutputFromBooking)
+                            .collect(toList());
+                } else {
+                    bookingList = page.stream()
+                            .skip(from - size)
+                            .map(bookingMapper::bookingDTOOutputFromBooking)
+                            .collect(toList());
+                }
+            }
+        } else {
+            bookingList = page.stream()
+                    .map(bookingMapper::bookingDTOOutputFromBooking)
+                    .collect(toList());
+        }
+
         for (BookingDTOOutput bookingDTOOutput : bookingList) {
             if (!finalReturnList.contains(bookingDTOOutput))
                 finalReturnList.add(bookingDTOOutput);
