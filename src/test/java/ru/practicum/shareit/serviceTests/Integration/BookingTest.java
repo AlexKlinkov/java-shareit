@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +15,16 @@ import ru.practicum.shareit.errorHandlerException.MyMethodArgumentTypeMismatchEx
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemDTO;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ServiceItemInDB;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapperImpl;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 
 @SpringBootTest
@@ -31,6 +39,15 @@ public class BookingTest {
     private ItemRepository itemRepository;
     @Autowired
     private ServiceBookingInBD serviceBookingInBD;
+    @Autowired
+    private ServiceItemInDB serviceItemInDB;
+    @Autowired
+    private UserMapperImpl userMapper;
+    @Autowired
+    private BookingMapperInitialization bookingMapperInitialization;
+
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
     private BookingDTOInput booking;
 
     @BeforeEach
@@ -96,23 +113,24 @@ public class BookingTest {
                 new Item(5,
                         "tool1", "tool1Description", true, owner, null));
         booking.setItemId(item.getId());
-        serviceBookingInBD.create(booker.getId(), booking);
-        bookingRepository.getById(6).setStatus(TypeOfStatus.APPROVED);
+        BookingDTOOutput bookingReturn = serviceBookingInBD.create(booker.getId(), booking);
+        bookingRepository.getById(bookingReturn.getId()).setStatus(TypeOfStatus.APPROVED);
         Assertions.assertThrows(ValidationException.class,
-                () -> serviceBookingInBD.updateStatusOfBooking(owner.getId(), 6, true));
+                () -> serviceBookingInBD.updateStatusOfBooking(owner.getId(), bookingReturn.getId(),
+                        true));
     }
 
     @Test
     public void updateStatusBookingTestWhenTryUpdateNotOwner() {
         User owner = userRepository.save(User.builder().id(1).name("Petre").email("Petre@mail.ru").build());
         User booker = userRepository.save(User.builder().id(2).name("Booker").email("Booker@mail.ru").build());
-        itemRepository.save(
+        Item item = itemRepository.save(
                 new Item(3,
                         "tool1", "tool1Description", true, owner, null));
-        booking.setItemId(3);
-        serviceBookingInBD.create(booker.getId(), booking);
+        booking.setItemId(item.getId());
+        BookingDTOOutput bookingReturn = serviceBookingInBD.create(booker.getId(), booking);
         Assertions.assertThrows(NotFoundException.class,
-                () -> serviceBookingInBD.updateStatusOfBooking(booker.getId(), 3, true));
+                () -> serviceBookingInBD.updateStatusOfBooking(0, bookingReturn.getId(), true));
     }
 
     @Test
@@ -123,8 +141,9 @@ public class BookingTest {
                 new Item(4,
                         "tool1", "tool1Description", true, owner, null));
         booking.setItemId(item.getId());
-        serviceBookingInBD.create(booker.getId(), booking);
-        BookingDTOOutput bookingDTOOutput = serviceBookingInBD.updateStatusOfBooking(owner.getId(), 5, true);
+        BookingDTOOutput whichWillUpdate = serviceBookingInBD.create(booker.getId(), booking);
+        BookingDTOOutput bookingDTOOutput = serviceBookingInBD.updateStatusOfBooking(owner.getId(),
+                whichWillUpdate.getId(), true);
         Assertions.assertEquals(TypeOfStatus.APPROVED, bookingDTOOutput.getStatus());
     }
     @Test
@@ -189,7 +208,7 @@ public class BookingTest {
         User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
         Assertions.assertEquals(0,
                 serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "FUTURE",
-                        0,1,"").size());
+                        0,1,"ALL").size());
     }
 
     @Test
@@ -197,7 +216,7 @@ public class BookingTest {
         User user = userRepository.save(User.builder().id(1).name("Name").email("email@email").build());
         Assertions.assertEquals(0,
                 serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "CURRENT",
-                        0,1,"").size());
+                        0,1,"ALL").size());
     }
 
     @Test
@@ -205,7 +224,31 @@ public class BookingTest {
         User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
         Assertions.assertEquals(0,
                 serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "PAST",
-                        0,1,"").size());
+                        0,1,"ALL").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdWhenFUTUREOwner() {
+        User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
+        Assertions.assertEquals(0,
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "FUTURE",
+                        0,1,"owner").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdWhenCURRENTOwner() {
+        User user = userRepository.save(User.builder().id(1).name("Name").email("email@email").build());
+        Assertions.assertEquals(0,
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "CURRENT",
+                        0,1,"owner").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdWhenPASTOwner() {
+        User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
+        Assertions.assertEquals(0,
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "PAST",
+                        0,1,"owner").size());
     }
 
     @Test
@@ -213,7 +256,23 @@ public class BookingTest {
         User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
         Assertions.assertEquals(0,
                 serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "WAITING",
-                        0,1,"").size());
+                        0,1,"ALL").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdWhenREJECTBookingOwner() {
+        User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
+        Assertions.assertEquals(0,
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "REJECTED",
+                        0,1, "owner").size());
+    }
+
+    @Test
+    public void getBookingsByBookerIdOrOwnerIdWhenWATINGOwner() {
+        User user = userRepository.save(User.builder().id(4).name("bookerFourth").email("Fourth@mail.ru").build());
+        Assertions.assertEquals(0,
+                serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "WAITING",
+                        0,1,"owner").size());
     }
 
     @Test
@@ -221,7 +280,7 @@ public class BookingTest {
         User booker = userRepository.save(User.builder().id(1).name("Booker").email("Booker@mail.ru").build());
         Assertions.assertEquals(0,
                 serviceBookingInBD.getBookingsByOwnerIdOrBookingID(booker.getId(), "REJECTED",
-                        0,1, "booker").size());
+                        0,1, "ALL").size());
     }
 
     @Test
@@ -252,19 +311,109 @@ public class BookingTest {
     public void getBookingsByBookerIdOrOwnerIdTestWhenStartAndFinishEquels() {
         User user = userRepository.save(User.builder().id(0).name("Name").email("Name@mail.ru").build());
         Assertions.assertThrows(ValidationException.class,
-                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",1, 0, ""));
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",1, 0,
+                        "ALL"));
     }
 
     @Test
     public void getBookingsByBookerIdOrOwnerIdTestWhenStartNegativeOrAmountIsNegative() {
         User user = userRepository.save(User.builder().id(0).name("Name").email("Name@mail.ru").build());
         Assertions.assertThrows(ValidationException.class,
-                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",-1, 1, ""));
+                () -> serviceBookingInBD.getBookingsByOwnerIdOrBookingID(user.getId(), "ALL",-1, 1,
+                        ""));
     }
 
-/*    @Test
+    @Test
     public void getBookingDTOOutputsTest1() {
-        Page<Booking> page;
-        Assertions.assertNotNull(serviceBookingInBD.getBookingDTOOutputs(page, 1, 2, 3));
-    }*/
+        int from = 0;
+        int size = 1;
+        int iterations = 0;
+        Page<Booking> page = bookingRepository.findAllByItemOwnerId( 1, PageRequest.of(0, size));
+        serviceBookingInBD.getBookingDTOOutputs(page, from, size, iterations);
+        Assertions.assertNotNull(serviceBookingInBD.getFinalReturnList());
+    }
+
+    @Test
+    public void getBookingDTOOutputsTest2() {
+        int from = 2;
+        int size = 1;
+        int iterations = 0;
+        Page<Booking> page = bookingRepository.findAllByItemOwnerId( 1, PageRequest.of(0, size));
+        serviceBookingInBD.getBookingDTOOutputs(page, from, size, iterations);
+        Assertions.assertNotNull(serviceBookingInBD.getFinalReturnList());
+    }
+
+    @Test
+    public void getBookingDTOOutputsTest3() {
+        int from = 2;
+        int size = 2;
+        int iterations = 0;
+        Page<Booking> page = bookingRepository.findAllByItemOwnerId( 1, PageRequest.of(0, size));
+        serviceBookingInBD.getBookingDTOOutputs(page, from, size, iterations);
+        Assertions.assertNotNull(serviceBookingInBD.getFinalReturnList());
+    }
+
+    @Test
+    public void getBookingDTOOutputsTest4() {
+        int from = 4;
+        int size = 3;
+        int iterations = 1;
+        Page<Booking> page = bookingRepository.findAllByItemOwnerId( 1, PageRequest.of(0, size));
+        serviceBookingInBD.getBookingDTOOutputs(page, from, size, iterations);
+        Assertions.assertNotNull(serviceBookingInBD.getFinalReturnList());
+    }
+    @Test
+    public void getBookingDTOOutputsTest5() {
+        int from = 4;
+        int size = 3;
+        int iterations = 2;
+        Page<Booking> page = bookingRepository.findAllByItemOwnerId( 1, PageRequest.of(0, size));
+        serviceBookingInBD.getBookingDTOOutputs(page, from, size, iterations);
+        Assertions.assertNotNull(serviceBookingInBD.getFinalReturnList());
+    }
+
+    @Test
+    public void createTestWhenItemIsNotAvailable() {
+        User owner = userRepository.save(User.builder().id(0).name("Name").email("myEmail@mail.ru").build());
+        User firstBooker = userRepository.save(User.builder().id(0).name("Name2").email("my2Email@mail.ru").build());
+        User booker = userRepository.save(User.builder().id(0).name("Name1").email("my1Email@mail.ru").build());
+
+        ItemRequest itemRequest = itemRequestRepository.save( new ItemRequest(
+                0, "nn", firstBooker, LocalDateTime.now().minusHours(1)));
+        Item item = itemRepository.save(new Item(1, "TV", "Wantching", true,
+                owner, itemRequest));
+        BookingDTOInput booking1 = new BookingDTOInput();
+        booking1.setItemId(item.getId());
+        booking1.setStart(LocalDateTime.now().plusSeconds(5));
+        booking1.setEnd(LocalDateTime.now().plusSeconds(15));
+
+        BookingDTOOutput booking = serviceBookingInBD.create(firstBooker.getId(),  booking1);
+        ItemDTO updateItem = new ItemDTO(item.getId(), "nn", "gete", false,
+               userMapper.DTOUserFromUser(owner),
+                null, null, null, itemRequest.getId());
+        serviceItemInDB.update(owner.getId(), item.getId(), updateItem);
+        Assertions.assertThrows(ValidationException.class,
+                () -> serviceBookingInBD.create(booker.getId(), booking1));
+    }
+
+    @Test
+    public void createTestWhenItemWantedToBookAgainByTheSameUser() {
+        User owner = userRepository.save(User.builder().id(0).name("Name").email("myEmail@mail.ru").build());
+        User firstBooker = userRepository.save(User.builder().id(0).name("Name2").email("my2Email@mail.ru").build());
+        User booker = userRepository.save(User.builder().id(0).name("Name1").email("my1Email@mail.ru").build());
+
+        ItemRequest itemRequest = itemRequestRepository.save( new ItemRequest(
+                0, "nn", firstBooker, LocalDateTime.now().minusHours(1)));
+        Item item = itemRepository.save(new Item(1, "TV", "Wantching", true,
+                owner, itemRequest));
+        BookingDTOInput booking1 = new BookingDTOInput();
+        booking1.setItemId(item.getId());
+        booking1.setStart(LocalDateTime.now().plusSeconds(5));
+        booking1.setEnd(LocalDateTime.now().plusSeconds(15));
+
+        BookingDTOOutput booking = serviceBookingInBD.create(firstBooker.getId(),  booking1);
+        BookingDTOOutput booking2 = serviceBookingInBD.create(firstBooker.getId(), booking1);
+        Assertions.assertNotNull(booking);
+        Assertions.assertNotNull(booking2);
+    }
 }

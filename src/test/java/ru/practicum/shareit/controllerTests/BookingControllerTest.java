@@ -149,6 +149,7 @@ public class BookingControllerTest {
     public void updateStatusOfBookingTest() throws Exception {
         when(bookingService.updateStatusOfBooking(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
                 .thenReturn(bookingDTOOutput);
+        bookingDTOOutput.setStatus(TypeOfStatus.APPROVED);
 
         mvc.perform(get("/bookings/1")
                         .content(mapper.writeValueAsString(bookingDTOOutput))

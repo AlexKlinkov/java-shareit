@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +25,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
+@Data
 @Component("ServiceBookingInBD")
 public class ServiceBookingInBD implements BookingService {
     private final BookingRepository bookingRepository;
@@ -267,7 +269,7 @@ public class ServiceBookingInBD implements BookingService {
         return new ArrayList<>(finalReturnList);
     }
 
-    private void getBookingDTOOutputs(Page<Booking> page, int from, int size, int iterations) {
+    public void getBookingDTOOutputs(Page<Booking> page, int from, int size, int iterations) {
         List<BookingDTOOutput> bookingList = new ArrayList<>();
         if (from < size && iterations == 0) {
             bookingList = page.stream()
