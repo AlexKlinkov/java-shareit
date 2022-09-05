@@ -18,6 +18,7 @@ public class CommentMapperInitialization implements CommentMapper {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
     }
+
     @Override
     public Comment commentFromCommentDTOInput(int authorId, int itemId, CommentDTOInput commentDTOInput) {
         Comment comment = new Comment();

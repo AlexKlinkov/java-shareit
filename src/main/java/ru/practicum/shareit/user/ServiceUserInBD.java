@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
@@ -12,13 +13,11 @@ import java.util.List;
 @Slf4j
 @Service
 @Component("ServiceUserInBD")
+@RequiredArgsConstructor
 public class ServiceUserInBD implements ServiceUser {
     private final UserRepository userRepository;
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
-    public ServiceUserInBD(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private UserMapper userMapper = new UserMapperImpl();
 
     @Override
     public UserDTO create(UserDTO user) {
@@ -38,7 +37,7 @@ public class ServiceUserInBD implements ServiceUser {
         log.debug("Обновляем пользователя");
         userRepository.save(existUserInBD);
         return getUserById(userId);
-}
+    }
 
     @Override
     public List<UserDTO> getUsers() {

@@ -1,8 +1,9 @@
 package ru.practicum.shareit.item;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -11,7 +12,8 @@ import ru.practicum.shareit.booking.TypeOfStatus;
 import ru.practicum.shareit.errorHandlerException.NotFoundException;
 import ru.practicum.shareit.errorHandlerException.ValidationException;
 import ru.practicum.shareit.item.comment.*;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.user.UserMapperImpl;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -22,33 +24,27 @@ import java.util.List;
 @Slf4j
 @Service
 @Component("ServiceItemInDB")
+@Data
+@RequiredArgsConstructor
 public class ServiceItemInDB implements ServiceItem {
-
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-
-    private final BookingRepository bookingRepository;
-
-    private final CommentRepository commentRepository;
-
-    private final CommentMapper commentMapper;
-    private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
+    @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
 
     @Autowired
-    public ServiceItemInDB(ItemRepository itemRepository, UserRepository userRepository,
-                           BookingRepository bookingRepository,
-                           CommentRepository commentRepository,
-                           @Qualifier("CommentMapperInitialization") CommentMapper commentMapper,
-                           @Qualifier("ItemMapperInitialization") ItemMapper itemMapper, UserMapper userMapper) {
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
-        this.bookingRepository = bookingRepository;
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-        this.itemMapper = itemMapper;
-        this.userMapper = userMapper;
-    }
+    private UserMapperImpl userMapper = new UserMapperImpl();
+
+    @Autowired
+    private CommentMapperInitialization commentMapper = new CommentMapperInitialization(getUserRepository(), getItemRepository());
+    @Autowired
+    private ItemMapperInitialization itemMapper = new ItemMapperInitialization();
 
     @Override
     public ItemDTO create(int ownerId, ItemDTO item) {
@@ -58,11 +54,8 @@ public class ServiceItemInDB implements ServiceItem {
         log.debug("При создании вещи определяем ее хозяина");
         item.setOwner(userMapper.DTOUserFromUser(userRepository.getById(ownerId)));
         log.debug("Сохраняем новую вещь в БД");
-        itemRepository.save(itemMapper.itemFromItemDTO(item));
-        log.debug("Получаем сохраненую вещь из бд с ID");
-        Item itemFromBD = itemRepository.getById((int) (itemRepository.count()));
-        log.debug("Возвращаем созданную вещь из бд");
-        return itemMapper.itemDTOFromItem(itemFromBD);
+        Item itemReturn = itemRepository.save(itemMapper.itemFromItemDTO(item));
+        return itemMapper.itemDTOFromItem(itemReturn);
     }
 
     @Override
@@ -70,7 +63,7 @@ public class ServiceItemInDB implements ServiceItem {
         log.debug("Получаем ту вещь из бд которую нужно обновить");
         ItemDTO previousItem = getItemById(ownerId, itemId);
         log.debug("Проверяем, что хозяин вещи обновляет свою вещь, а не чью-то чужую");
-        if (previousItem.getOwner().getId() != ownerId){
+        if (previousItem.getOwner().getId() != ownerId) {
             throw new NotFoundException("Пользователь пытается обновить данные по вещи, которая ему не принадлежит");
         }
         log.debug("Оставляем значение полей от предущей вещи, если у новой они пустые или null при обновлении");
@@ -89,9 +82,9 @@ public class ServiceItemInDB implements ServiceItem {
         if (item.available == null) {
             item.available = previousItem.available;
         }
-        if (item.getRequest() == null) {
+        if (item.getRequestId() == null) {
             log.debug("Значение запроса при обновлении от предыдущей версии вещи");
-            item.setRequest(previousItem.getRequest());
+            item.setRequestId(previousItem.getRequestId());
         }
         log.debug("Обновляем вещь");
         item.setId(itemId);
@@ -108,13 +101,7 @@ public class ServiceItemInDB implements ServiceItem {
                 returnList.add(itemMapper.itemDTOFromItem(item));
             }
         }
-        Comparator<ItemDTO> compareByStartDate = new Comparator<>() {
-            @Override
-            public int compare(ItemDTO o1, ItemDTO o2) {
-                return o1.getId() - o2.getId();
-            }
-        };
-        returnList.sort(compareByStartDate);
+        returnList.sort(Comparator.comparing(ItemDTO::getId));
         return returnList;
     }
 
@@ -154,11 +141,11 @@ public class ServiceItemInDB implements ServiceItem {
         return returnAllFoundItemsByText;
     }
 
-    public boolean checkAlreadyExistItem (ItemDTO item) {
+    public boolean checkAlreadyExistItem(ItemDTO item) {
         List<Item> items = new ArrayList<>(itemRepository.findAll());
         for (Item itemInBD : items) {
             if (itemInBD.getName().equals(item.getName()) &&
-                itemInBD.getDescription().equals(item.getDescription())){
+                    itemInBD.getDescription().equals(item.getDescription())) {
                 return true;
             }
         }
@@ -166,7 +153,7 @@ public class ServiceItemInDB implements ServiceItem {
     }
 
     @Override
-    public CommentDTOOutput addComment (int userId, int itemId, CommentDTOInput commentDTOInput) {
+    public CommentDTOOutput addComment(int userId, int itemId, CommentDTOInput commentDTOInput) {
         log.debug("Пользователь, который брал вещь в пользование может оставить комментарий, " +
                 "Проверяем, что текст комменатрия не пустой");
         LocalDateTime now = LocalDateTime.now();
@@ -183,8 +170,20 @@ public class ServiceItemInDB implements ServiceItem {
         }
         log.debug("Сохраняем комментарий в БД");
         Comment commentInBD =
-                commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId,commentDTOInput));
+                commentRepository.save(commentMapper.commentFromCommentDTOInput(userId, itemId, commentDTOInput));
         return commentMapper.commentDTOOutputFromComment(commentInBD);
 
+    }
+
+    @Override
+    public ItemDTO getItemDTOByRequestId(Integer requestId) {
+        log.debug("Получаем список всех вещей, чтоб потом вернуть вещь по requestID");
+        List<Item> allItems = new ArrayList<>(itemRepository.findAll());
+        for (Item item : allItems) {
+            if (itemMapper.itemDTOFromItem(item).getRequestId() == requestId) {
+                return itemMapper.itemDTOFromItem(item);
+            }
+        }
+        return null;
     }
 }
