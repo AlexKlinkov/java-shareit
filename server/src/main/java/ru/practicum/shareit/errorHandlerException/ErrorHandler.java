@@ -15,9 +15,9 @@ public class ErrorHandler {
     // 400 - Ошибка статуса
     @ExceptionHandler(MyMethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String,String>> handleException(MyMethodArgumentTypeMismatchException exception) {
-        Map<String,String> resp = new HashMap<>();
-        resp.put("error",String.format("Unknown %s: %s", exception.getName(), exception.getValue()));
+    public ResponseEntity<Map<String, String>> handleException(MyMethodArgumentTypeMismatchException exception) {
+        Map<String, String> resp = new HashMap<>();
+        resp.put("error", String.format("Unknown %s: %s", exception.getName(), exception.getValue()));
         return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
 
