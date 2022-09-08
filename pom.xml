@@ -36,7 +36,7 @@
 					<configuration>
 						<excludes>
 							<exclude>
-								<groupId>org.project-lombok</groupId>
+								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
 							</exclude>
 						</excludes>
@@ -172,19 +172,19 @@
 <!--					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
-					</plugin>-->
+					</plugin>
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-					</plugin>
+					</plugin>-->
 				</plugins>
 			</build>
 			<reporting>
 				<plugins>
-					<plugin>
+<!--					<plugin>
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs-maven-plugin</artifactId>
-					</plugin>
+					</plugin>-->
 				</plugins>
 			</reporting>
 		</profile>
