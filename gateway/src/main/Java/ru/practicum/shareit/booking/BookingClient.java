@@ -8,7 +8,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDTOInput;
-import ru.practicum.shareit.booking.dto.TypeOfStatus;
 import ru.practicum.shareit.client.BaseClient;
 
 import java.util.Map;
@@ -32,8 +31,9 @@ public class BookingClient extends BaseClient {
     }
 
     // Обновление информации по бронированию
-    public ResponseEntity<Object> updateBooking(Long ownerId, Long bookingId, Boolean approved) {
-        return patch("/" + bookingId, ownerId, approved);
+    public ResponseEntity<Object> updateBooking(Long bookingId, Long ownerId, Boolean approved) {
+        String path = "/" + bookingId + "?approved=" + approved;
+        return patch(path, ownerId, null, null);
     }
 
     // Получение бронирования по ID
@@ -42,24 +42,22 @@ public class BookingClient extends BaseClient {
     }
 
     // Получение всех бронирований
-    public ResponseEntity<Object> getBookings(Long userId, TypeOfStatus state,
-                                              Integer from, Integer size, String key) {
+    public ResponseEntity<Object> getBookings(Long userId, String state,
+                                              Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
-                "state", state.name(),
+                "state", state,
                 "from", from,
-                "size", size,
-                "key", key
+                "size", size
         );
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
     // Получение всех бронирований для владельца вещи
-    public ResponseEntity<Object> getBookingsOfOwner(long userId, TypeOfStatus state,
-                                                     Integer from, Integer size, String key) {
+    public ResponseEntity<Object> getBookingsOfOwner(long userId, String state,
+                                                     Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
-                "state", state.name(),
+                "state", state,
                 "from", from,
-                "size", size,
-                "key", key
+                "size", size
         );
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }

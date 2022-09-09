@@ -7,12 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDTOInput;
-import ru.practicum.shareit.booking.dto.TypeOfStatus;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -24,15 +18,15 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                           @RequestBody @Valid BookingDTOInput requestDto) {
+                                           @RequestBody BookingDTOInput requestDto) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.bookItem(userId, requestDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> updateBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @PathVariable Long bookingId,
-                                                @NotNull @RequestParam(value = "approved") Boolean approved) {
+    public ResponseEntity<Object> updateBooking(@PathVariable Long bookingId,
+                                                @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                @RequestParam(value = "approved") Boolean approved) {
         log.info("Update booking {}, userId={}", bookingId, userId);
         return bookingClient.updateBooking(bookingId, userId, approved);
     }
@@ -47,22 +41,18 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                              @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
-        TypeOfStatus state = TypeOfStatus.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-        return bookingClient.getBookings(userId, state, from, size, "ALL");
+        return bookingClient.getBookings(userId, stateParam, from, size);
     }
 
     @GetMapping(path = "/owner")
     public ResponseEntity<Object> getBookingsOfOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                     @Positive @RequestParam(name = "size", defaultValue = "20") Integer size) {
-        TypeOfStatus state = TypeOfStatus.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+                                                     @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                     @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-        return bookingClient.getBookingsOfOwner(userId, state, from, size, "owner");
+        return bookingClient.getBookingsOfOwner(userId, stateParam, from, size);
     }
 }

@@ -44,13 +44,12 @@ public class RequestClient extends BaseClient {
 
     // Метод возвращающий абсолютно все запросы на вещи по странично
     public ResponseEntity<Object> getItemRequestsOfUser(long userId, Integer from,
-                                                        Integer size, String sort) {
+                                                        Integer size) {
 
         Map<String, Object> parameters = Map.of(
                 "from", from,
-                "size", size,
-                "sort", sort
+                "size", size
         );
-        return get("/all?state={state}&from={from}&size={size}", userId, parameters);
+        return get("/all?from={from}&size={size}", userId, parameters);
     }
 }

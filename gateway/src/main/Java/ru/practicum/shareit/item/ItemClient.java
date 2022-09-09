@@ -11,8 +11,6 @@ import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDTOInput;
 import ru.practicum.shareit.item.dto.ItemDTOInput;
 
-import java.util.Map;
-
 @Service
 public class ItemClient extends BaseClient {
 
@@ -45,9 +43,8 @@ public class ItemClient extends BaseClient {
     }
     // Возвращает вещь по тексту
     public ResponseEntity<Object> getItemBySearchText(String text) {
-        Map<String, Object> parameters = Map.of(
-                "text", text);
-        return get("/search", 1L, parameters);
+        String param = "/search?text=" + text;
+        return get(param);
 }
     // Создаем комментарий
     public ResponseEntity<Object> addComment(Long userId, Long itemId, CommentDTOInput commentDTOInput) {

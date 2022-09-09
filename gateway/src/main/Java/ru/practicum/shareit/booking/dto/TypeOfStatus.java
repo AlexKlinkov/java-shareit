@@ -1,7 +1,4 @@
 package ru.practicum.shareit.booking.dto;
-
-import java.util.Optional;
-
 public enum TypeOfStatus {
     // Все
     ALL,
@@ -15,13 +12,4 @@ public enum TypeOfStatus {
     REJECTED,
     // Ожидающие подтверждения
     WAITING;
-
-    public static Optional<TypeOfStatus> from(String stringState) {
-        for (TypeOfStatus state : values()) {
-            if (state.name().equalsIgnoreCase(stringState)) {
-                return Optional.of(state);
-            }
-        }
-        return Optional.empty();
-    }
 }

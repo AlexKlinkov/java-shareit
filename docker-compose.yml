@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   gateway:
-    build: gateway
+    build: ./gateway
     container_name: gateway
     ports:
       - "8080:8080"
@@ -12,7 +12,7 @@ services:
       - SHAREIT_SERVER_URL=http://server:9090
 
   server:
-    build: server
+    build: ./server
     container_name: server
     ports:
       - "9090:9090"
@@ -20,7 +20,6 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-
   db:
     image: postgres:14.5-alpine
     container_name: db

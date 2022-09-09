@@ -8,9 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDTOInput;
 
-import javax.validation.Valid;
-import javax.validation.constraints.PositiveOrZero;
-
 @Controller
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -21,15 +18,15 @@ public class UserController {
 
     // Создание пользователя
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody @Valid UserDTOInput userDTOInput) {
+    public ResponseEntity<Object> createUser(@RequestBody UserDTOInput userDTOInput) {
         log.info("Creating user={}", userDTOInput);
         return userClient.createUser(userDTOInput);
     }
 
     // Обновление пользователя по ID
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable @PositiveOrZero Long userId,
-                                             @RequestBody @Valid UserDTOInput userDTOInput) {
+    public ResponseEntity<Object> updateUser(@PathVariable Long userId,
+                                             @RequestBody UserDTOInput userDTOInput) {
         log.info("Updating userId={}", userId);
         return userClient.updateUser(userId, userDTOInput);
     }
@@ -43,14 +40,14 @@ public class UserController {
 
     // Получение пользователя по ID
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable @PositiveOrZero Long userId) {
+    public ResponseEntity<Object> getUserById(@PathVariable Long userId) {
         log.info("Getting user by ID");
         return userClient.getUserById(userId);
     }
 
     // Удаление пользователя по ID
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUserById(@PathVariable @PositiveOrZero Long userId) {
+    public ResponseEntity<Object> deleteUserById(@PathVariable Long userId) {
         log.info("Delete user by ID");
         return userClient.deleteUserById(userId);
     }

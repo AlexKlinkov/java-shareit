@@ -8,21 +8,21 @@ import ru.practicum.shareit.user.dto.UserDTOInput;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDTOInput {
-    @PositiveOrZero
     private Integer id;
     @NotEmpty
     private String name;
     @NotEmpty
+    @NotNull
     private String description;
     @NotNull
     private Boolean available;
+    private Integer requestId;
     private UserDTOInput owner;
     private BookingDTOInput lastBooking;
     private BookingDTOInput nextBooking;
