@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>shareit</artifactId>
         <groupId>ru.practicum</groupId>
+        <artifactId>shareit</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -33,7 +33,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
@@ -41,12 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -97,40 +97,40 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-rest-webmvc</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <!--		<dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>-->
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
             <version>2.9.7</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
+<!--        <resources>
+&lt;!&ndash;            <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-            </resource>
-        </resources>
+            </resource>&ndash;&gt;
+        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -145,7 +145,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <pluginManagement>
+        <!--<pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -174,15 +174,15 @@
                             <phase>compile</phase>
                         </execution>
                     </executions>
-                    <!--					<dependencies>
+                    &lt;!&ndash;					<dependencies>
                                             <dependency>
                                                 <groupId>com.puppycrawl.tools</groupId>
                                                 <artifactId>checkstyle</artifactId>
                                                 <version>10.3</version>
                                             </dependency>
-                                        </dependencies>-->
+                                        </dependencies>&ndash;&gt;
                 </plugin>
-<!--                <plugin>
+&lt;!&ndash;                <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>4.7.0.0</version>
@@ -197,7 +197,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>-->
+                </plugin>&ndash;&gt;
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
@@ -267,29 +267,29 @@
                     </executions>
                 </plugin>
             </plugins>
-        </pluginManagement>
+        </pluginManagement>-->
     </build>
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>check</id>
             <build>
                 <plugins>
-                    <!--	<plugin>
+                    &lt;!&ndash;	<plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-checkstyle-plugin</artifactId>
-                        </plugin> -->
-                    <!--<plugin>
+                        </plugin> &ndash;&gt;
+                    &lt;!&ndash;<plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                    </plugin>-->
+                    </plugin>&ndash;&gt;
                 </plugins>
             </build>
             <reporting>
                 <plugins>
-                    <!--						<plugin>
+                    &lt;!&ndash;						<plugin>
                                                 <groupId>com.github.spotbugs</groupId>
                                                 <artifactId>spotbugs-maven-plugin</artifactId>
-                                            </plugin> -->
+                                            </plugin> &ndash;&gt;
                 </plugins>
             </reporting>
         </profile>
@@ -313,5 +313,5 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
 </project>
