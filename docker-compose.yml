@@ -20,6 +20,10 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=Admin
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_SQL_INIT_MODE=always
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=none
   db:
     image: postgres:14.5-alpine
     container_name: db
