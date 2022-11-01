@@ -1,2 +1,3 @@
 # ShareIt
-This a special service which allows people exchange different things
+
+This service which allows to share items upload your things, creating your own request for things, approve or refuse booking
