@@ -19,12 +19,12 @@
 
 ## Стек технологий:
 
-Spring Boot
-Maven
-MapStruct
-Lombok
-Httpclient
-ORM Hibernate
-PostgreSQL
-H2database
-Docker
+- Spring Boot
+- Maven
+- MapStruct
+- Lombok
+- Httpclient
+- ORM Hibernate
+- PostgreSQL
+- H2database
+- Docker
