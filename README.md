@@ -9,6 +9,9 @@
 - Менять статус бронирования вещи, 
 - Cоздавать запросы на отсутствующую вещь.
 
+## BD Schema:
+[DBSCHEMA](https://github.com/AlexKlinkov/java-shareit/blob/main/BD_Diagram.jpg)
+
 ## Instruction of launch app:
 
 С помощью IntelliJ IDEA (my version - 2022.1)
