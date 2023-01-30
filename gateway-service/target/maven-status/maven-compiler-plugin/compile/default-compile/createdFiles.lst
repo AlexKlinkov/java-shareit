@@ -1,0 +1,16 @@
+ru\practicum\shareit\request\RequestController.class
+ru\practicum\shareit\item\dto\CommentDTOInput.class
+ru\practicum\shareit\item\dto\ItemDTOInput.class
+ru\practicum\shareit\item\ItemController.class
+ru\practicum\shareit\user\UserController.class
+ru\practicum\shareit\client\BaseClient.class
+ru\practicum\shareit\request\dto\RequestDTOInput.class
+ru\practicum\shareit\item\ItemClient.class
+ru\practicum\shareit\booking\dto\BookingDTOInput.class
+ru\practicum\shareit\request\RequestClient.class
+ru\practicum\shareit\user\dto\UserDTOInput.class
+ru\practicum\shareit\booking\BookingClient.class
+ru\practicum\shareit\user\UserClient.class
+ru\practicum\shareit\ShareItGateway.class
+ru\practicum\shareit\booking\BookingController.class
+ru\practicum\shareit\booking\dto\TypeOfStatus.class

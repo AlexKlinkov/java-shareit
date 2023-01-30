@@ -1,0 +1,9 @@
+ru\practicum\shareit\controllerTests\ItemControllerTest.class
+ru\practicum\shareit\serviceTests\Integration\RequestTest.class
+ru\practicum\shareit\controllerTests\UserControllerTest.class
+ru\practicum\shareit\ShareItServerTest.class
+ru\practicum\shareit\controllerTests\BookingControllerTest.class
+ru\practicum\shareit\controllerTests\RequestControllerTests.class
+ru\practicum\shareit\serviceTests\Integration\UserTest.class
+ru\practicum\shareit\serviceTests\Integration\BookingTest.class
+ru\practicum\shareit\serviceTests\Integration\ItemTest.class
