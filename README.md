@@ -10,7 +10,7 @@
 - Cоздавать запросы на отсутствующую вещь.
 
 ## BD Schema:
-[DBSCHEMA](https://github.com/AlexKlinkov/java-shareit/blob/main/BD_Diagram.jpg)
+![DBSCHEMA](https://github.com/AlexKlinkov/java-shareit/blob/main/BD_Diagram.jpg)
 
 ## Instruction of launch app:
 
